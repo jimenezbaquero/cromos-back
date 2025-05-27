@@ -36,7 +36,7 @@ createInertiaApp({
         maxToasts: 3,
         newestOnTop: true,
         position: 'top-right',
-        timeout: 3000,
+        timeout: 4000,
       })
       .mount(el);
   },

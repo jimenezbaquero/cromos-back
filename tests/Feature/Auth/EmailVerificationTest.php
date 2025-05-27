@@ -21,7 +21,9 @@ class EmailVerificationTest extends TestCase {
     }
 
     public function test_email_can_be_verified(): void {
-        $user = User::factory()->unverified()->create();
+        $user = User::factory()->unverified()->create([
+            'email_verified_at' => null
+        ]);
 
         Event::fake();
 
@@ -38,6 +40,7 @@ class EmailVerificationTest extends TestCase {
 
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
+        $this->assertTrue($response->isRedirect(), 'Expected response to be a redirect.');
         $this->assertStringContainsString('?verified=1', $response->headers->get('Location'));
     }
 

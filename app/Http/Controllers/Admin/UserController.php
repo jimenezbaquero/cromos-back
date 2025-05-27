@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Mockery\Exception;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -57,9 +58,9 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'guest')->get();
 
-        return Inertia::render('Users/Create', [
+        return Inertia::render('Admin/Users/Create', [
             'roles' => $roles,
         ]);
     }
@@ -78,7 +79,7 @@ class UserController extends Controller
             $user->assignRole($data['role']);
             DB::commit();
             event(new Registered($user));
-            return redirect()->route('users.index')->with('success', 'Usuario creado correctamente');
+            return redirect()->route('admin.users.show',['user'=> $user->id])->with('success', 'Usuario creado correctamente');
         }catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error al crear usuario: ' . $e->getMessage(), [
@@ -92,48 +93,55 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('roles');
+        $user['role'] = $user->roles->first()->name;;
 
-        return Inertia::render('Users/Show', [
+        return Inertia::render('Admin/Users/Show', [
             'user' => $user,
         ]);
     }
 
     public function edit(User $user)
     {
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'guest')->get();
+        
+        $user['role'] = $user->roles()->first()->name;
 
-        return Inertia::render('Users/Edit', [
+        return Inertia::render('Admin/Users/Edit', [
             'user' => $user,
             'roles' => $roles,
         ]);
     }
 
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'min:6', 'confirmed'],
-            'role' => ['required', Rule::exists('roles', 'name')],
-        ]);
-
-        $user->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'] ? Hash::make($validated['password']) : $user->password,
-        ]);
-
-        $user->syncRoles([$validated['role']]);
-
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
+        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            $user->update([
+                'name' => $data['name'],
+                'email' => $data['email'],
+            ]);
+            
+            $user->syncRoles([$data['role']]);
+            
+            DB::commit();
+            return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado correctamente');
+        }catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar usuario: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Hubo un problema al actualizar el usuario']);
+        }
     }
 
     public function destroy(User $user)
     {
-        $user->delete();
-
-        return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente');
+        try {
+            $user->delete();
+            return redirect()->route('users.index')->with('success', __('user_delete_success'));
+        }catch (\Throwable $e){
+            Log::error(__('user_delete_error') . $e->getMessage());
+            return back()->withErrors(['error' => __('user_delete_error')]);
+        }
     }
 }
 

@@ -5,7 +5,9 @@
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md relative">
-        <h3 class="text-lg font-semibold mb-4">Nuevo Usuario</h3>
+        <h3 class="text-lg font-semibold mb-4">
+          {{mode == 'edit' ? $t('edit_user') : $t('create_user')}}
+        </h3>
 
         <div class="space-y-4">
           <div>
@@ -74,11 +76,19 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import { useFlashFromResponse } from '@/Composables/useFlashFromResponse';
+import {watch} from "vue";
 
 const props = defineProps({
   show: Boolean,
-  roles: Array
+  roles: Array,
+  mode: String,
+  user: {
+    type: Object,
+    default: null
+  }
 });
+
+console.log('props ',props)
 
 const emit = defineEmits(['close', 'submitted']);
 
@@ -90,17 +100,25 @@ const form = useForm({
   role: ''
 });
 
-const save = () => {
-  form.post(route('users.store'), {
-    onSuccess: () => {
-      form.reset();
-      emit('submitted');
-      showFlash();
-    },
-    onError: () => {
-      showFlash();
+watch(
+  () => props.user,
+  (newUser) => {
+    if (newUser) {
+      form.name = newUser.name ?? '';
+      form.email = newUser.email ?? '';
+      form.role = newUser.role ?? '';
+    } else {
+      // Si es modo crear, vaciar campos
+      form.name = '';
+      form.email = '';
+      form.role = '';
     }
-  });
+  },
+  { immediate: true }
+);
+
+const save = () => {
+  emit('submitted',form)
 };
 
 const cancel = () => {

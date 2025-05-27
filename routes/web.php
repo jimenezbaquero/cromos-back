@@ -77,10 +77,9 @@ Route::group([
         'role:admin'
     ],
     'prefix' => 'admin',
+    'as' => 'admin.'
 ], function () {
-    Route::middleware(['auth'])->group(function () {
-        Route::resource('users', UserController::class);
-    });
+    Route::resource('users', UserController::class);
 });
 
 Route::middleware('web')->group(function () {

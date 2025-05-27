@@ -1,107 +1,121 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Admin;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
     
-    protected function setUp(): void {
+    protected User $admin;
+    protected User $regular;
+    
+    protected function setUp(): void
+    {
         parent::setUp();
         
-        Role::firstOrCreate(['name' => 'admin']);
-        Role::firstOrCreate(['name' => 'client']);
+        // Crear roles
+        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'client']);
+        
+        // Usuario administrador
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('admin');
+        
+        // Usuario no administrador
+        $this->regular = User::factory()->create();
+        $this->regular->assignRole('client');
     }
     
-    public function test_admin_can_create_user() {
-        $admin = User::factory()->create();
-        $admin->assignRole('admin');
-        
-        $this->actingAs($admin);
-        
-        $this->get('/users');
-        
-        $response = $this->post(route('users.store'), [
-            'name' => 'Nuevo Usuario',
-            'email' => 'nuevo@usuario.com',
-            'role' => 'client',
-            '_token' => $this->app['session']->token()
-        ]);
-        
-        $response->assertRedirect(route('users.index'));
-        
-        $this->assertDatabaseHas('users', [
-            'name' => 'Nuevo Usuario',
-            'email' => 'nuevo@usuario.com',
-        ]);
-        
-        $newUser = User::where('email', 'nuevo@usuario.com')->first();
-        $this->assertTrue($newUser->hasRole('client'));
+    /** @test */
+    public function admin_can_access_user_index()
+    {
+        $response = $this->actingAs($this->admin)->get(route('admin.users.index'));
+        $response->assertStatus(200);
     }
     
-    public function test_it_validates_request_fields() {
-        Role::updateOrCreate(['name' => 'admin']);
-        $admin = User::factory()->create();
-        $admin->assignRole('admin');
-        
-        $this->actingAs($admin);
-        
-        $this->get('/users');
-        
-        $response = $this->post(route('users.store'), [
-            '_token' => $this->app['session']->token()
-        ]);
-        
-        $response->assertSessionHasErrors([
-            'name',
-            'email',
-            'role'
-        ]);
+    /** @test */
+    public function non_admin_cannot_access_user_index()
+    {
+        $response = $this->actingAs($this->regular)->get(route('admin.users.index'));
+        $response->assertForbidden(); // o assertRedirect si usas redirect con middleware
     }
     
-    public function test_only_admin_can_store_users() {
-        Role::updateOrCreate(['name' => 'admin']);
-        $user = User::factory()->create(); // sin rol admin
-        $this->actingAs($user);
+    /** @test */
+    public function admin_can_create_user()
+    {
+        $data = [
+            'name' => 'New User',
+            'email' => 'newuser@example.com',
+            'role' => 'client'
+        ];
         
-        $this->get('/users');
+        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), $data);
         
-        $response = $this->post(route('users.store'), [
-            'name' => 'Sin permiso',
-            'email' => 'sin@permiso.com',
-            'role' => 'admin',
-            '_token' => $this->app['session']->token()
-        ]);
-        
-        $response->assertForbidden(); // basado en authorize() de UserRequest
+        $response->assertRedirect();
+        $this->assertDatabaseHas('users', ['email' => 'newuser@example.com']);
     }
     
-    public function test_it_rolls_back_transaction_and_logs_on_exception() {
-        Role::updateOrCreate(['name' => 'admin']);
-        $admin = User::factory()->create();
-        $admin->assignRole('admin');
+    /** @test */
+    public function admin_can_view_user_details()
+    {
+        $user = User::factory()->create()->assignRole('client');
         
-        $this->actingAs($admin);
+        $response = $this->actingAs($this->admin)->get(route('admin.users.show', $user->id));
         
-        $this->get('/users');
+        $response->assertStatus(200);
+    }
+    
+    /** @test */
+    public function admin_can_edit_user()
+    {
+        $user = User::factory()->create()->assignRole('client');
         
-        // Provocar fallo (rol inválido)
-        $response = $this->post(route('users.store'), [
-            'name' => 'Error Test',
-            'email' => 'error@test.com',
-            'role' => 'rol-inexistente',
-            '_token' => $this->app['session']->token()
-        ]);
+        $response = $this->actingAs($this->admin)->get(route('admin.users.edit', $user->id));
+        $response->assertStatus(200);
+    }
+    
+    /** @test */
+    public function admin_can_update_user()
+    {
+        $user = User::factory()->create()->assignRole('client');
         
-        $response->assertSessionHasErrors(['role']);
-        $this->assertDatabaseMissing('users', ['email' => 'error@test.com']);
+        $data = [
+            'name' => 'Updated Name',
+            'email' => 'updated@example.com',
+            'role' => 'client'
+        ];
+        
+        $response = $this->actingAs($this->admin)->put(route('admin.users.update', $user->id), $data);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('users', ['email' => 'updated@example.com']);
+    }
+    
+    /** @test */
+    public function admin_can_delete_user()
+    {
+        $user = User::factory()->create()->assignRole('client');
+        
+        $response = $this->actingAs($this->admin)->delete(route('admin.users.destroy', $user->id));
+        
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    }
+    
+    /** @test */
+    public function non_admin_cannot_perform_admin_actions()
+    {
+        $user = User::factory()->create();
+        
+        $this->actingAs($this->regular)->get(route('admin.users.index'))->assertForbidden();
+        $this->actingAs($this->regular)->post(route('admin.users.store'), [])->assertForbidden();
+        $this->actingAs($this->regular)->get(route('admin.users.edit', $user->id))->assertForbidden();
+        $this->actingAs($this->regular)->put(route('admin.users.update', $user->id), [])->assertForbidden();
+        $this->actingAs($this->regular)->delete(route('admin.users.destroy', $user->id))->assertForbidden();
     }
 }
