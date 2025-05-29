@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Admin\PublisherController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SocialLoginController;
@@ -82,6 +83,7 @@ Route::group([
 ], function () {
     Route::resource('users', UserController::class);
     Route::resource('publishers', PublisherController::class)->except(['show','destroy']);
+    Route::resource('collections', CollectionController::class);
 });
 
 Route::middleware('web')->group(function () {

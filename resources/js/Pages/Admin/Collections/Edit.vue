@@ -1,5 +1,5 @@
 <template>
-  <Head :title="$t('edit_publisher')" />
+  <Head :title="$t('collections')" />
   
   <div v-if="isLoading" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
     <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -10,13 +10,13 @@
   
   <AdminLayout>
     <h2 class="text-xl">
-      {{ $t('edit_publisher') }}
+      {{ $t('create_collection') }}
     </h2>
     
-    <FormPublisher
+    <FormCollection
       v-model:form="form"
-      :countries="countries"
-      class="mt-4"
+      :publishers="publishers"
+      class = "mt-4"
     />
     
     <div class="mt-8 mr-8 flex justify-end">
@@ -31,36 +31,37 @@
 </template>
 
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import FormPublisher from '@/Components/FormPublisher.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { ref } from 'vue';
-import { useFlashFromResponse } from '@/Composables/useFlashFromResponse';
+import {Head, useForm} from '@inertiajs/vue3';
+import AdminLayout from "@/Layouts/AdminLayout.vue"; //
+import { useFlashFromResponse } from '@/Composables/useFlashFromResponse'
+import FormCollection from "@/Components/FormCollection.vue";
 
 const props = defineProps({
-  publisher: Object,
-  countries: Array
+  publishers: Array,
+  collection: Object,
 });
 
-const { showFlash } = useFlashFromResponse();
-const isLoading = ref(false);
+const { showFlash } = useFlashFromResponse()
 
 const form = useForm({
-  name: props.publisher.name,
-  country_id: props.publisher.country_id
+  name: props.collection.name,
+  description: props.collection.description,
+  year: props.collection.year,
+  publisher_id: props.collection.publisher_id,
 });
 
 const save = () => {
-  isLoading.value = true;
-  form.put(route('admin.publishers.update', props.publisher.id), {
+  form.put(route('admin.collections.update',props.collection.id), {
     onSuccess: () => {
-      isLoading.value = false;
-      showFlash();
+      showFlash()
     },
     onError: () => {
-      isLoading.value = false;
-      showFlash();
-    }
-  });
+      showFlash()
+    },
+  })
+}
+
+const cancel = () => {
+
 };
 </script>

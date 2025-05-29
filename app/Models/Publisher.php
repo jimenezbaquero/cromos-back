@@ -17,4 +17,8 @@ class Publisher extends Model
     protected $fillable = [
         'name',
     ];
+    
+    public function collections(): \Illuminate\Database\Eloquent\Relations\HasMany {
+        return $this->hasMany(Collection::class);
+    }
 }

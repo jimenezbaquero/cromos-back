@@ -1,5 +1,5 @@
 <template>
-  <Head :title="$t('users')" />
+  <Head :title="$t('collections')" />
   
   <div v-if="isLoading" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
     <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -10,14 +10,14 @@
   
   <AdminLayout>
     <h2 class="text-xl">
-      {{ $t('users') }}
+      {{ $t('collections') }}
     </h2>
     
     <div class="py-6">
       <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-end">
           <Link
-            :href="route('admin.users.create')"
+            :href="route('admin.collections.create')"
             class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded"
           >
             + {{ $t('create') }}
@@ -27,7 +27,7 @@
         <div class="bg-white rounded-lg pt-0">
           <Datatable
             :columns="columns"
-            :pagination="users"
+            :pagination="collections"
             :filters="filters"
             :row-actions="rowActions"
           />
@@ -38,8 +38,8 @@
     <!-- Modal de confirmación de borrado -->
     <ConfirmModal
       :show="showConfirmModal"
-      :title="$t('delete_user')"
-      :message="$t('sure_to') + ' ' + selectedUser?.name + '? ' + $t('cant_undone')"
+      :title="$t('delete_collection')"
+      :message="$t('sure_to') + ' ' + selectedCollection?.name + '? ' + $t('cant_undone')"
       @cancelAction="cancelDelete"
       @confirmAction="performDelete"
     />
@@ -57,7 +57,7 @@ import { useFlashFromResponse } from '@/Composables/useFlashFromResponse'
 import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
-  users: Object,
+  collections: Object,
   roles: Array
 })
 
@@ -66,13 +66,13 @@ const { showFlash } = useFlashFromResponse()
 
 const showConfirmModal = ref(false)
 const isLoading = ref(false)
-const selectedUser = ref(null)
+const selectedCollection = ref(null)
 
 const columns = computed(() => [
   { key: 'id', label: 'ID', sortable: true },
   { key: 'name', label: t('name'), sortable: true },
-  { key: 'email', label: t('email'), sortable: true },
-  { key: 'role', label: t('role'), sortable: false },
+  { key: 'year', label: t('year'), sortable: true },
+  { key: 'publisher', label: t('publisher'), sortable: false },
   { key: 'created_at', label: t('created_at'), sortable: true }
 ])
 
@@ -80,13 +80,13 @@ const rowActions = [
   {
     label: 'edit',
     icon: PencilSquareIcon,
-    onClick: (item) => router.visit(route('admin.users.edit', item.id)),
+    onClick: (item) => router.visit(route('admin.collections.edit', item.id)),
     class: 'text-blue-600 hover:text-blue-800'
   },
   {
     label: 'show',
     icon: EyeIcon,
-    onClick: (item) => router.visit(route('admin.users.show', item.id)),
+    onClick: (item) => router.visit(route('admin.collections.show', item.id)),
     class: 'text-yellow-600 hover:text-yellow-800'
   },
   {
@@ -99,15 +99,15 @@ const rowActions = [
 
 const filters = []
 
-function confirmDelete(user) {
-  selectedUser.value = user
+function confirmDelete(collection) {
+  selectedCollection.value = collection
   showConfirmModal.value = true
 }
 
 function performDelete() {
   isLoading.value = true
-  if (selectedUser.value) {
-    router.delete(route('users.destroy', selectedUser.value.id), {
+  if (selectedCollection.value) {
+    router.delete(route('admin.collections.destroy', selectedCollection.value.id), {
       preserveScroll: true,
       onSuccess: () => {
         cancelDelete()
@@ -124,6 +124,6 @@ function performDelete() {
 
 function cancelDelete() {
   showConfirmModal.value = false
-  selectedUser.value = null
+  selectedCollection.value = null
 }
 </script>

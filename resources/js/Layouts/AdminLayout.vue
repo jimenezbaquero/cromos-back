@@ -3,33 +3,60 @@
     <!-- Mobile Sidebar (slide over) -->
     <transition name="fade">
       <aside
-          v-if="sidebarOpen"
-          class="fixed inset-0 z-50 flex sm:hidden"
+        v-if="sidebarOpen"
+        class="fixed inset-0 z-50 flex sm:hidden"
       >
         <div class="w-40 bg-white border-r border-gray-200 p-4 space-y-4">
           <div class="flex justify-between items-center mb-6">
             <button @click="sidebarOpen = false" class="text-gray-500 hover:text-gray-700">&times;</button>
           </div>
           <nav class="flex flex-col space-y-2">
-            <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">Usuarios</Link>
-            <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">Colecciones</Link>
-            <Link :href="route('admin.publishers.index')" class="text-gray-700 hover:text-blue-500">Editoriales</Link>
+            <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">{{ $t('users') }}</Link>
+            <Link :href="route('admin.publishers.index')" class="text-gray-700 hover:text-blue-500">{{
+                $t('publishers')
+              }}
+            </Link>
+            <Link :href="route('admin.collections.index')" class="text-gray-700 hover:text-blue-500">
+              {{ $t('collections') }}
+            </Link>
           </nav>
         </div>
         <div class="flex-1 bg-black bg-opacity-25" @click="sidebarOpen = false"></div>
       </aside>
     </transition>
-
+    
     <!-- Desktop Sidebar -->
-    <aside class="w-40 hidden sm:block bg-white border-r border-gray-200 p-4 space-y-4">
-
-      <nav class="flex flex-col space-y-2">
-        <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">Usuarios</Link>
-        <Link :href="route('dashboard')" class="text-gray-700 hover:text-blue-500">Colecciones</Link>
-        <Link :href="route('admin.publishers.index')" class="text-gray-700 hover:text-blue-500">Editoriales</Link>
+    <aside class="w-40 hidden sm:block bg-white border-r border-gray-200">
+      <div class="w-full">
+        <Link :href="route('dashboard')">
+          <img src="/img/logo.png" alt="Logo" class="w-full h-auto"/>
+        </Link>
+      </div>
+      <nav class="flex flex-col">
+        <Link
+          :href="route('admin.users.index')"
+          class="text-gray-700 hover:text-blue-500 p-2"
+          :class="{'bg-blue-100 text-blue-700': $page.url.includes('/admin/users')}"
+        >
+          {{ $t('users') }}
+        </Link>
+        <Link
+          :href="route('admin.publishers.index')"
+          class="text-gray-700 hover:text-blue-500 p-2"
+          :class="{'bg-blue-100 text-blue-700': $page.url.includes('/admin/publishers')}"
+        >
+          {{ $t('publishers') }}
+        </Link>
+        <Link
+          :href="route('admin.collections.index')"
+          class="text-gray-700 hover:text-blue-500 p-2"
+          :class="{'bg-blue-100 text-blue-700': $page.url.includes('/admin/collections')}"
+        >
+          {{ $t('collections') }}
+        </Link>
       </nav>
     </aside>
-
+    
     <!-- Main Content -->
     <div class="flex flex-col min-h-screen overflow-hidden">
       <!-- Top Navigation -->
@@ -42,13 +69,13 @@
             </svg>
           </button>
         </div>
-
+        
         <div class="flex items-center space-x-4">
           <LanguageSelect/>
           <Dropdown align="right" width="48">
             <template #trigger>
               <button
-                  class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none"
+                class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none"
               >
                 {{ $page.props.auth.user.name }}
                 <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -58,7 +85,7 @@
                 </svg>
               </button>
             </template>
-
+            
             <template #content>
               <DropdownLink :href="route('profile.edit')">
                 Perfil
@@ -70,17 +97,17 @@
           </Dropdown>
         </div>
       </nav>
-
+      
       <!-- Page Header -->
       <header v-if="$slots.header" class="bg-white shadow px-4 sm:px-6 py-4">
-        <slot name="header" />
+        <slot name="header"/>
       </header>
-
+      
       <!-- Page Content -->
       <main class="flex-grow px-4 sm:px-6 py-4 overflow-auto">
-        <slot />
+        <slot/>
       </main>
-      <AppFooter />
+      <AppFooter/>
     </div>
   </div>
 </template>
@@ -89,14 +116,15 @@
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
 </style>
 
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import {ref} from 'vue';
+import {Link} from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import LanguageSelect from "@/Components/LanguageSelect.vue";

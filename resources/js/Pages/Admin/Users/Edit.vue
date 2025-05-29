@@ -19,7 +19,7 @@
       class = "mt-4"
     />
     
-    <div class="mt-8 flex justify-end">
+    <div class="mt-8 mr-8 flex justify-end">
       <button
         @click="save"
         class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-sm"

@@ -12,18 +12,18 @@ class PublisherControllerTest extends TestCase
 {
     use RefreshDatabase;
     
+    protected User $admin;
+    protected User $client;
+    
     protected function setUp(): void {
         parent::setUp();
         
-        // Crear roles
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'client']);
         
-        // Usuario administrador
         $this->admin = User::factory()->create();
         $this->admin->assignRole('admin');
         
-        // Usuario no administrador
         $this->client = User::factory()->create();
         $this->client->assignRole('client');
     }
