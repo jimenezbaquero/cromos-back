@@ -34,7 +34,7 @@ class CollectionRequest extends FormRequest
     public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {
-            $id = $this->collection?->id;
+            $id = $this->route('collection')?->id;
             $exists = Collection::where('name', $this->input('name'))
                 ->where('year', $this->input('year'))
                 ->where('publisher_id', $this->input('publisher_id'));

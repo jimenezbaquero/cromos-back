@@ -101,6 +101,23 @@ class UserControllerTest extends TestCase
     }
     
     /** @test */
+    public function it_does_not_allow_duplicate_emails()
+    {
+        User::factory()->create([
+            'email' => 'usuario@example.com',
+        ]);
+        
+        $response = $this->post('/register', [
+            'name' => 'Otro Usuario',
+            'email' => 'usuario@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+        
+        $response->assertSessionHasErrors('email');
+    }
+    
+    /** @test */
     public function non_admin_cannot_perform_admin_actions()
     {
         $user = User::factory()->create();

@@ -74,6 +74,21 @@ class PublisherControllerTest extends TestCase
     }
     
     /** @test */
+    public function it_does_not_allow_duplicate_name()
+    {
+        Publisher::factory()->create([
+            'name' => 'name example',
+        ]);
+        
+        $response = $this->actingAs($this->admin)->post('/admin/publishers', [
+            'name' => 'name example',
+        ]);
+        
+        
+        $response->assertSessionHasErrors('name');
+    }
+    
+    /** @test */
     public function non_admin_cannot_perform_admin_actions() {
         $publisher = Publisher::factory()->create();
         

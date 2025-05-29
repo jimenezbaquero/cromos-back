@@ -22,9 +22,9 @@ class PublisherRequest extends FormRequest
      */
     public function rules(): array
     {
-        $publisherId = $this->publisher?->id;
+        $publisherId = $this->route('publisher')?->id;
         return [
-            'name' => ['required', 'string', 'max:255',  Rule::unique('users')->ignore($publisherId)],
+            'name' => ['required', 'string', 'max:255',  Rule::unique('publishers')->ignore($publisherId)],
         ];
     }
 }

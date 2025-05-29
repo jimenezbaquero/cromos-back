@@ -18,21 +18,13 @@ class CollectionFactory extends Factory
      */
     public function definition(): array
     {
-        $countPublisher = Publisher::count();
-        $find = false;
-        $id = null;
-        while(!$find){
-            $id = rand(1, $countPublisher);
-            if(Publisher::find($id)){
-                $find = true;
-            }
-        }
-        
+        $publisher = Publisher::inRandomOrder()->first();
+
         return [
             'name' => fake()->words(3,true),
             'description' => fake()->text(),
             'year' => rand(1975, 2025),
-            'publisher_id' => $id,
+            'publisher_id' => $publisher->id,
         ];
     }
 }
