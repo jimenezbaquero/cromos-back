@@ -36,7 +36,7 @@
           {{ role.name }}
         </option>
       </select>
-      <p v-if="form.errors.role" class="text-red-500 text-xs mt-1">{{ form.errors.role }}</p>
+      <p v-if="form.errors.role" class="text-red-500 text-sm mt-1">{{ form.errors.role }}</p>
     </div>
   </div>
 </template>

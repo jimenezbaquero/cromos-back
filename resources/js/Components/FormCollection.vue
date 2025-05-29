@@ -55,7 +55,7 @@
           {{ publisher.name }}
         </option>
       </select>
-      <p v-if="form.errors.publisher" class="text-red-600 text-sm mt-1">{{ form.errors.publisher }}</p>
+      <p v-if="form.errors.publisher_id" class="font-normal text-red-600 text-sm mt-1">{{ form.errors.publisher_id }}</p>
     </div>
   </div>
 </template>
