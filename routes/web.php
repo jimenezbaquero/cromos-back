@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PublisherController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\DashboardController;
@@ -80,6 +81,7 @@ Route::group([
     'as' => 'admin.'
 ], function () {
     Route::resource('users', UserController::class);
+    Route::resource('publishers', PublisherController::class)->except(['show','destroy']);
 });
 
 Route::middleware('web')->group(function () {

@@ -12,8 +12,8 @@
           </div>
           <nav class="flex flex-col space-y-2">
             <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">Usuarios</Link>
-            <Link :href="route('dashboard')" class="text-gray-700 hover:text-blue-500">Colecciones</Link>
-            <Link :href="route('dashboard')" class="text-gray-700 hover:text-blue-500">Marcas</Link>
+            <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">Colecciones</Link>
+            <Link :href="route('admin.publishers.index')" class="text-gray-700 hover:text-blue-500">Editoriales</Link>
           </nav>
         </div>
         <div class="flex-1 bg-black bg-opacity-25" @click="sidebarOpen = false"></div>
@@ -26,7 +26,7 @@
       <nav class="flex flex-col space-y-2">
         <Link :href="route('admin.users.index')" class="text-gray-700 hover:text-blue-500">Usuarios</Link>
         <Link :href="route('dashboard')" class="text-gray-700 hover:text-blue-500">Colecciones</Link>
-        <Link :href="route('dashboard')" class="text-gray-700 hover:text-blue-500">Marcas</Link>
+        <Link :href="route('admin.publishers.index')" class="text-gray-700 hover:text-blue-500">Editoriales</Link>
       </nav>
     </aside>
 
@@ -80,6 +80,7 @@
       <main class="flex-grow px-4 sm:px-6 py-4 overflow-auto">
         <slot />
       </main>
+      <AppFooter />
     </div>
   </div>
 </template>
@@ -99,6 +100,7 @@ import { Link } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import LanguageSelect from "@/Components/LanguageSelect.vue";
+import AppFooter from "@/Components/Footer.vue";
 
 
 const sidebarOpen = ref(false);

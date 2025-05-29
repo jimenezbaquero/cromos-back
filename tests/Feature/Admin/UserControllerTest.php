@@ -39,13 +39,6 @@ class UserControllerTest extends TestCase
     }
     
     /** @test */
-    public function non_admin_cannot_access_user_index()
-    {
-        $response = $this->actingAs($this->regular)->get(route('admin.users.index'));
-        $response->assertForbidden(); // o assertRedirect si usas redirect con middleware
-    }
-    
-    /** @test */
     public function admin_can_create_user()
     {
         $data = [

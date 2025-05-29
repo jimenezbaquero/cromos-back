@@ -28,6 +28,7 @@
   "name": "Name",
   "password": "Password",
   "profile": "Profile",
+  "publishers": "Publishers",
   "regards": "Regards",
   "register": "Register",
   "register_facebook": "Register with Facebook",
