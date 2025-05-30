@@ -34,11 +34,12 @@
         </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="item in pagination.data" :key="item.id">
+        <tr v-for="item in pagination.data" :key="item.id" class="hover:bg-gray-200">
           <td
             v-for="column in columns"
             :key="column.key"
             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            @click="goShow(item.id)"
           >
             {{ resolveField(item, column.key) }}
           </td>
@@ -128,6 +129,10 @@ import debounce from 'lodash/debounce';
 const props = defineProps({
   columns: Array,
   pagination: Object,
+  go_show: {
+    type: Boolean,
+    default: true
+  },
   rowActions: {
     type: Array,
     default: () => [],
@@ -141,6 +146,8 @@ const props = defineProps({
     }),
   },
 });
+
+const emits = defineEmits(['goShow'])
 
 const search = ref(props.filters.search || '');
 const sort = ref({
@@ -190,5 +197,11 @@ function reload() {
       replace: true,
     }
   );
+}
+
+const goShow = (id) =>{
+  if(props.go_show) {
+    emits('goShow', id)
+  }
 }
 </script>

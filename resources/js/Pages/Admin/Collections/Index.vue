@@ -30,6 +30,8 @@
             :pagination="collections"
             :filters="filters"
             :row-actions="rowActions"
+            :go_show="true"
+            @goShow = "goShow"
           />
         </div>
       </div>
@@ -125,5 +127,9 @@ function performDelete() {
 function cancelDelete() {
   showConfirmModal.value = false
   selectedCollection.value = null
+}
+
+function goShow(id){
+  router.visit(route('admin.collections.show', id))
 }
 </script>

@@ -164,9 +164,67 @@
                     }
                 ]
             }
+        },
+        "/api/collections": {
+            "get": {
+                "tags": [
+                    "Colecciones"
+                ],
+                "summary": "Obtener todas las colecciones",
+                "description": "Retorna una lista de todas las colecciones disponibles.",
+                "operationId": "1c56670af32b2e0bb7c56f75d42e7789",
+                "responses": {
+                    "200": {
+                        "description": "Listado de colecciones obtenido con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "collections": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Coleccion"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
+        "schemas": {
+            "Coleccion": {
+                "title": "Colección",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Colección de Verano"
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
@@ -179,6 +237,10 @@
         {
             "name": "Autenticación",
             "description": "Endpoints para registrar, autenticar y manejar sesión de usuarios"
+        },
+        {
+            "name": "Colecciones",
+            "description": "Colecciones"
         }
     ]
 }

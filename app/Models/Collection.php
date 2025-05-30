@@ -9,6 +9,17 @@ class Collection extends Model
 {
     use HasFactory;
     
+    /**
+     * @OA\Schema(
+     *     schema="Coleccion",
+     *     type="object",
+     *     title="Colección",
+     *     required={"id", "name"},
+     *     @OA\Property(property="id", type="integer", example=1),
+     *     @OA\Property(property="name", type="string", example="Colección de Verano")
+     * )
+     */
+    
     protected $fillable = [
         'name',
         'description',
