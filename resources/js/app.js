@@ -1,7 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
 
-import {createInertiaApp} from '@inertiajs/vue3';
+import {createInertiaApp, usePage} from '@inertiajs/vue3';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 import {createApp, h} from 'vue';
 import {ZiggyVue} from '../../vendor/tightenco/ziggy';
@@ -11,13 +11,9 @@ import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 
 
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-const i18n = createI18n({
-  legacy: false,
-  locale: 'es', // idioma por defecto
-  fallbackLocale: 'en',
-  messages,
-});
+
 
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,
@@ -27,6 +23,12 @@ createInertiaApp({
       import.meta.glob('./Pages/**/*.vue'),
     ),
   setup({el, App, props, plugin}) {
+    const i18n = createI18n({
+      legacy: false,
+      locale: props.initialPage.props.locale || 'es',
+      fallbackLocale: 'en',
+      messages,
+    });
     return createApp({render: () => h(App, props)})
       .use(plugin)
       .use(ZiggyVue)

@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => optional($request->session()->get('errors'))->get('error')[0] ?? null,
             ],
+            'locale' => $request->session()->get('locale'),
         ];
     }
 }
