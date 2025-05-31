@@ -31,4 +31,8 @@ class Collection extends Model
     public function publisher(): \Illuminate\Database\Eloquent\Relations\BelongsTo {
         return $this->belongsTo(Publisher::class);
     }
+    
+    public function cards(): \Illuminate\Database\Eloquent\Relations\HasMany {
+        return $this->hasMany(Card::class);
+    }
 }

@@ -25,7 +25,7 @@ class CollectionController extends Controller
             });
         }
         
-        if ($request->filled('sort') && in_array($request->input('sort'), ['nombre', 'año', 'id'])) {
+        if ($request->filled('sort') && in_array($request->input('sort'), ['name', 'year', 'id'])) {
             $query->orderBy($request->input('sort'), $request->input('direction') === 'desc' ? 'desc' : 'asc');
         }
         
@@ -89,6 +89,7 @@ class CollectionController extends Controller
                 'description' => $collection->description,
                 'year' => $collection->year,
                 'publisher' => $collection->publisher ? $collection->publisher->name : '---',
+                'card_number' => $collection->cards()->count(),
                 'created_at' => $collection->created_at->format('d/m/Y'),
             ],
         ]);
@@ -136,4 +137,5 @@ class CollectionController extends Controller
             return back()->withErrors(['error' => 'Hubo un problema al eliminar la colección']);
         }
     }
+    
 }

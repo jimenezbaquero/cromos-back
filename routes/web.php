@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\CardController;
+use App\Http\Controllers\Admin\CardTypeController;
 use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Admin\PublisherController;
 use App\Http\Controllers\Admin\UserController;
@@ -83,7 +85,16 @@ Route::group([
 ], function () {
     Route::resource('users', UserController::class);
     Route::resource('publishers', PublisherController::class)->except(['show','destroy']);
+    
     Route::resource('collections', CollectionController::class);
+    
+    Route::resource('cards', CardController::class);
+    Route::group([
+        'prefix' => 'cards',
+    ],function() {
+        Route::get('/showCardsCollection/{collection}', [CardController::class, 'showCardsCollection'])->name('cards.showCardsCollection');
+    });
+    Route::resource('cardtypes', CardTypeController::class);
 });
 
 Route::middleware('web')->group(function () {
