@@ -27,11 +27,12 @@ class CardController extends Controller
                 'card_type' => $card->card_type->name,
                 'url' => $card->url,
                 'publisher' => $card->publisher->name ,
+                'probability' => $card->probability,
                 'created_at' => $card->created_at->format('d/m/Y'),
             ];
         }
         
-        return Inertia::render('Admin/Collections/Index', [
+        return Inertia::render('Admin/Collections/ShowCards', [
             'cards' => $cards,
             'filters' => $request->only('search', 'sort', 'direction'),
         ]);
@@ -104,7 +105,11 @@ class CardController extends Controller
         
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where('number', 'like', "%$search%");
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'like', "%$search%");
+                $q->orWhere('probability', 'like', "%$search%");
+            });
+           
         }
         
         if ($request->filled('sort') && in_array($request->input('sort'), ['number', 'id'])) {
@@ -125,6 +130,7 @@ class CardController extends Controller
                 'number' => $card->number,
                 'card_type' => $card->cardType->name,
                 'url' => $card->url_photo,
+                'probability' => $card->probability,
                 'created_at' => $card->created_at->format('d/m/Y'),
             ];
         }

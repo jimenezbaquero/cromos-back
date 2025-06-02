@@ -76,9 +76,9 @@ const isLoading = ref(false)
 const selectedCard = ref(null)
 
 const columns = computed(() => [
-  { key: 'id', label: 'ID', sortable: true },
   { key: 'number', label: t('number'), sortable: true },
   { key: 'card_type', label: t('type'), sortable: true },
+  { key: 'probability', label: t('probability'), sortable: true },
   { key: 'created_at', label: t('created_at'), sortable: true }
 ])
 
@@ -86,13 +86,13 @@ const rowActions = [
   {
     label: 'edit',
     icon: PencilSquareIcon,
-    onClick: (item) => router.visit(route('admin.collections.edit', item.id)),
+    onClick: (item) => router.visit(route('admin.cards.edit', item.id)),
     class: 'text-blue-600 hover:text-blue-800'
   },
   {
     label: 'show',
     icon: EyeIcon,
-    onClick: (item) => router.visit(route('admin.collections.show', item.id)),
+    onClick: (item) => router.visit(route('admin.cards.show', item.id)),
     class: 'text-yellow-600 hover:text-yellow-800'
   },
   {

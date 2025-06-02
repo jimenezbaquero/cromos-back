@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('collection_id')->references('id')->on('collections');
             $table->foreignId('card_type_id')->references('id')->on('card_types');
             $table->string('url_photo');
+            $table->unsignedSmallInteger('probability')->default(100);
             $table->timestamps();
             
             $table->unique(['number', 'collection_id']);

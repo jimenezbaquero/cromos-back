@@ -18,7 +18,8 @@ class Card extends Model
         'name',
         'collection_id',
         'card_type_id',
-        'url_photo'
+        'url_photo',
+        'probability'
     ];
     
     public function cardType(): \Illuminate\Database\Eloquent\Relations\BelongsTo {

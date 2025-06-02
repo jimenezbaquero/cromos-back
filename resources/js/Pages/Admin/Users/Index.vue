@@ -26,12 +26,13 @@
         
         <div class="bg-white rounded-lg pt-0">
           <Datatable
-            :columns="columns"
-            :pagination="users"
-            :filters="filters"
+            :columns="headers"
+            :pagination="filteredData"
             :row-actions="rowActions"
+            :filters="filters"
             :go_show="true"
             @goShow = "goShow"
+            @changeFilters = "changeFilters"
           />
         </div>
       </div>
@@ -60,7 +61,9 @@ import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
   users: Object,
-  roles: Array
+  roles: Array,
+  headers: Array,
+  filters: Array
 })
 
 const { t } = useI18n()
@@ -69,13 +72,14 @@ const { showFlash } = useFlashFromResponse()
 const showConfirmModal = ref(false)
 const isLoading = ref(false)
 const selectedUser = ref(null)
+const filteredData = ref(props.users)
 
 const columns = computed(() => [
-  { key: 'id', label: 'ID', sortable: true },
-  { key: 'name', label: t('name'), sortable: true },
-  { key: 'email', label: t('email'), sortable: true },
-  { key: 'role', label: t('role'), sortable: false },
-  { key: 'created_at', label: t('created_at'), sortable: true }
+  { key: 'id', label: 'ID', sortable: true, filter: { sort: '', value: '', type: 'text' } },
+  { key: 'name', label: t('name'), sortable: true, filter: { sort: '', value: '', type: 'text' } },
+  { key: 'email', label: t('email'), sortable: true, filter: { sort: '', value: '', type: 'text' } },
+  { key: 'role', label: t('role'), sortable: false, filter: { sort: '', value: '', type: 'select', options: [] } },
+  { key: 'created_at', label: t('created_at'), sortable: true, filter: { sort: '', value: '', type: 'date' } }
 ])
 
 const rowActions = [
@@ -99,8 +103,6 @@ const rowActions = [
   }
 ]
 
-const filters = []
-
 function confirmDelete(user) {
   selectedUser.value = user
   showConfirmModal.value = true
@@ -109,7 +111,7 @@ function confirmDelete(user) {
 function performDelete() {
   isLoading.value = true
   if (selectedUser.value) {
-    router.delete(route('users.destroy', selectedUser.value.id), {
+    router.delete(route('admin.users.destroy', selectedUser.value.id), {
       preserveScroll: true,
       onSuccess: () => {
         cancelDelete()
@@ -131,5 +133,13 @@ function cancelDelete() {
 
 function goShow(id){
   router.visit(route('admin.users.show', id))
+}
+
+const changeFilters = (filters) => {
+  console.log(filters)
+  axios.post(route('admin.users.getData'),filters)
+    .then((response) => {
+      filteredData.value = response.data
+    })
 }
 </script>
