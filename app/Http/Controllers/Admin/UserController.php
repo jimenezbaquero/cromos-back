@@ -48,6 +48,7 @@ class UserController extends Controller
             'users' => $users,
             'filters' => $filters,
             'headers' => $headers,
+            'funnels' => $this->userService->getFunnelOptions(),
             'roles' => $roles
         ]);
     }

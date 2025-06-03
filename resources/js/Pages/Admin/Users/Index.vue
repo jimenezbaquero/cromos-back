@@ -30,6 +30,7 @@
             :pagination="filteredData"
             :row-actions="rowActions"
             :filters="filters"
+            :funnels="funnels"
             :go_show="true"
             @goShow = "goShow"
             @changeFilters = "changeFilters"
@@ -62,8 +63,9 @@ import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/solid'
 const props = defineProps({
   users: Object,
   roles: Array,
-  headers: Array,
-  filters: Array
+  headers: Object,
+  filters: Object,
+  funnels: Object
 })
 
 const { t } = useI18n()

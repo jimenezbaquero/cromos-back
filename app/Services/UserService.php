@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helper\FiltersHelper;
+use App\Helper\OptionHelper;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -114,6 +115,7 @@ class UserService
                 'type' => 'text',
                 'filterable' => false,
                 'sortable' => true,
+                'funnel' => true
             ],
             'created_at' => [
                 'label' => __('created_at'),
@@ -121,9 +123,7 @@ class UserService
                 'filterable' => true,
                 'sortable' => true,
             ],
-            
         ];
-        
     }
     
     public function getFilters() {
@@ -147,7 +147,7 @@ class UserService
                 'field' => 'roles.name',
                 'value' => '',
                 'sort' => '',
-                
+                'funnel' => []
             ],
             'created_at' => [
                 'field' => 'users.created_at',
@@ -160,6 +160,12 @@ class UserService
                 'sort' => '',
             ],
         
+        ];
+    }
+    
+    public function getFunnelOptions() {
+        return [
+            "role" => OptionHelper::getRoleOptions(),
         ];
     }
 }
