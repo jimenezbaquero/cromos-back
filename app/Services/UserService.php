@@ -17,13 +17,13 @@ class UserService
     public function getUsersWithFilters($filters)
     {
         $query = User::with('roles');
-        
+
         if(!empty($filters)) {
            $query = FiltersHelper::applyTableFilter($query, $filters);
         }
         return $query->paginate(10)->withQueryString();
     }
-    
+
     public function createUser(array $data)
     {
         DB::beginTransaction();
@@ -33,17 +33,17 @@ class UserService
                 'email' => $data['email'],
                 'password' => Hash::make('password'),
             ]);
-            
+
             if(!isset($data['role'])){
                 $data['role'] = 'client';
             }
-            
+
             $user->assignRole($data['role']);
-            
+
             DB::commit();
-            
+
             event(new Registered($user));
-            
+
             return $user;
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -54,7 +54,7 @@ class UserService
             throw $e;
         }
     }
-    
+
     public function updateUser(User $user, array $data)
     {
         DB::beginTransaction();
@@ -63,11 +63,11 @@ class UserService
                 'name' => $data['name'],
                 'email' => $data['email'],
             ]);
-            
+
             $user->syncRoles([$data['role']]);
-            
+
             DB::commit();
-            
+
             return $user;
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -78,7 +78,7 @@ class UserService
             throw $e;
         }
     }
-    
+
     public function deleteUser(User $user): bool
     {
         try {
@@ -89,7 +89,7 @@ class UserService
             return false;
         }
     }
-    
+
     public function getHeaders() {
         return [
             'id' => [
@@ -125,7 +125,7 @@ class UserService
             ],
         ];
     }
-    
+
     public function getFilters() {
         return [
             'id' => [
@@ -144,7 +144,7 @@ class UserService
                 'sort' => '',
             ],
             'role' => [
-                'field' => 'roles.name',
+                'field' => 'roles.id',
                 'value' => '',
                 'sort' => '',
                 'funnel' => []
@@ -159,10 +159,10 @@ class UserService
                 'value' => '',
                 'sort' => '',
             ],
-        
+
         ];
     }
-    
+
     public function getFunnelOptions() {
         return [
             "role" => OptionHelper::getRoleOptions(),

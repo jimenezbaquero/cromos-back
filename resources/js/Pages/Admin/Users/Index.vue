@@ -1,18 +1,18 @@
 <template>
   <Head :title="$t('users')" />
-  
+
   <div v-if="isLoading" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
     <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
     </svg>
   </div>
-  
+
   <AdminLayout>
     <h2 class="text-xl">
       {{ $t('users') }}
     </h2>
-    
+
     <div class="py-6">
       <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-end">
@@ -23,7 +23,7 @@
             + {{ $t('create') }}
           </Link>
         </div>
-        
+
         <div class="bg-white rounded-lg pt-0">
           <Datatable
             :columns="headers"
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Modal de confirmación de borrado -->
     <ConfirmModal
       :show="showConfirmModal"
@@ -138,10 +138,11 @@ function goShow(id){
 }
 
 const changeFilters = (filters) => {
-  console.log(filters)
+  isLoading.value = true
   axios.post(route('admin.users.getData'),filters)
     .then((response) => {
       filteredData.value = response.data
+      isLoading.value = false
     })
 }
 </script>

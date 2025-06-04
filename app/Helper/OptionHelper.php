@@ -5,16 +5,23 @@ namespace App\Helper;
 use App\Models\Collection;
 use Spatie\Permission\Models\Role;
 
-class OptionHelper
-{
-   public static function makeOptions($collection){
-       return $collection->map(function($item){
-           return ['label'=> $item->name, 'id' => $item->id];
-       });
-   }
-   
-   public static function getRoleOptions(){
-       $roles = Role::all();
-       return self::makeOptions($roles);
-   }
+class OptionHelper {
+    public static function createOptions($collection) {
+        return array_map(function ($item) {
+            return [
+                'label' => $item->name,
+                'id' => $item->id,
+                'value' => false
+            ];
+        }, $collection);
+    }
+
+    public static function getRoleOptions() {
+        $roles = Role::all();
+        $pairs = [];
+        foreach ($roles as $role) {
+            $pairs[] = (object)['name' => $role['name'], 'id' => $role['id']];
+        }
+        return self::createOptions($pairs);
+    }
 }

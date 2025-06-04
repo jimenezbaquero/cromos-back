@@ -23,13 +23,40 @@ class FiltersHelper
             foreach ($filters['filters'] as $key => $filter) {
                 if ($filter['value'] != '') {
                     $query->where($filter['field'], 'like', '%' . $filter['value'] . '%');
+                }else if(!empty($filter['funnel'])){
+                    $cont = 0;
+                    if(!in_array($key,['role'])) {
+                        $query->where(function ($q) use ($cont, $filter) {
+                            foreach ($filter['funnel'] as $option) {
+                                if (isset($option['value']) && $option['value']) {
+                                    $action = $cont == 0 ? 'where' : 'orWhere';
+                                    $q->$action($filter['field'], $option['id']);
+                                    $cont++;
+                                }
+                            }
+                        });
+                    } else {
+                        switch ($key){
+                            case('role'):{
+                                $query->whereHas('roles', function($q) use ($filter,$cont) {
+                                    foreach ($filter['funnel'] as $option) {
+                                        if (isset($option['value']) && $option['value']) {
+                                            $action = $cont == 0 ? 'where' : 'orWhere';
+                                            $q->$action($filter['field'], $option['id']);
+                                            $cont++;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
                 }
                 if ($filter['sort'] != '') {
                     $query->orderBy($filter['field'], $filter['sort']);
                 }
             }
         }
-        
+
         return $query;
     }
 }
