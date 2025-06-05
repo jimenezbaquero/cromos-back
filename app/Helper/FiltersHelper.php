@@ -18,9 +18,11 @@ class FiltersHelper
                     $q->orWhere($field, 'LIKE', '%' . $filter['value'] . '%');
                 }
             });
-        }
-        if (isset($filters['filters'])) {
-            foreach ($filters['filters'] as $key => $filter) {
+        } else {
+            foreach ($filters as $key => $filter) {
+                if($key == 'search'){
+                    continue;
+                }
                 if ($filter['value'] != '') {
                     $query->where($filter['field'], 'like', '%' . $filter['value'] . '%');
                 } else if (!empty($filter['funnel'])) {

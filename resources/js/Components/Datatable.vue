@@ -1,39 +1,39 @@
 <template>
   <div class="bg-white rounded-lg overflow-hidden">
-
-
+    
+    
     <!-- Tabla (solo en pantallas md en adelante) -->
     <div class="hidden md:block overflow-x-auto min-h-72">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
         <tr>
           <th
-              v-for="(column,index) in columns"
-              :key="index"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
+            v-for="(column,index) in columns"
+            :key="index"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
           >
             <div class="flex items-center px-2 py-1 rounded w-full max-w-sm">
               <div v-if="column.funnel" class="relative">
                 <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-1 cursor-pointer transition duration-150 ease-in-out"
-                    :class="{
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 mr-1 cursor-pointer transition duration-150 ease-in-out"
+                  :class="{
         'text-gray-400':  !filters[index].funnel?.length,
         'text-blue-600 drop-shadow-md scale-110': filters[index].funnel?.length,
         'text-black': !filters[index].funnel?.length
     }"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    @click="toggleDropdown(index)"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  @click="toggleDropdown(index)"
                 >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 13.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 019 17v-3.586L3.293 6.707A1 1 0 013 6V4z"/>
                 </svg>
                 <!-- Menú desplegable -->
                 <div
-                    v-if="openFunnel[index]"
-                    class="absolute mt-2 w-80 bg-white border border-gray-200 rounded shadow-lg z-10"
+                  v-if="openFunnel[index]"
+                  class="absolute mt-2 w-80 bg-white border border-gray-200 rounded shadow-lg z-10"
                 >
                   <div class="flex justify-between px-4 py-2 border-b border-gray-200 text-sm text-gray-700">
                     <button @click.stop="applyFunnelFilter(index)" class="hover:underline">Filtrar</button>
@@ -42,15 +42,15 @@
                   </div>
                   <ul>
                     <li
-                        v-for="option in funnels[index]"
-                        :key="option.id"
-                        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      v-for="option in funnels[index]"
+                      :key="option.id"
+                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
                       <input
-                          type="checkbox"
-                          :value="option.id"
-                          v-model="option.value"
-                          class="mr-2"
+                        type="checkbox"
+                        :value="option.id"
+                        v-model="option.value"
+                        class="mr-2"
                       />
                       {{ $t(option.label.toLowerCase()) }}
                     </li>
@@ -73,7 +73,7 @@
                 <div class="px-2 py-1 rounded text-sm border-none w-full">
                   {{ $t(column.label.toLowerCase()) }}
                 </div>
-
+              
               </template>
               <template v-if="column.sortable">
                 <div @click="sortBy(column)" class="cursor-pointer justify-end w-10 ">
@@ -81,18 +81,18 @@
                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/>
                   </svg>
-
+                  
                   <svg v-else-if="filters[index].sort === 'desc'" xmlns="http://www.w3.org/2000/svg" fill="none"
                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/>
                   </svg>
-
+                  
                   <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                        stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/>
                   </svg>
-
+                
                 </div>
               </template>
             </div>
@@ -106,26 +106,18 @@
         <tbody v-if="pagination.data.length === 0">
         <tr>
           <td colspan="100%" class="py-10">
-            <div class="flex flex-col items-center justify-center w-full text-center text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24"
-                   stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9.75 17L3 10.25l1.41-1.41L9.75 14.17l10.59-10.59L21.75 5.25 9.75 17z"/>
-              </svg>
-              <p class="text-lg font-semibold">No se encontraron resultados</p>
-              <p class="text-sm text-gray-400">Prueba ajustando los filtros o recargando la página.</p>
-            </div>
+            <NoData/>
           </td>
         </tr>
         </tbody>
-
+        
         <tbody v-else class="bg-white divide-y divide-gray-200">
         <tr v-for="item in pagination.data" :key="item.id" class="hover:bg-gray-200">
           <td
-              v-for="(column,index) in columns"
-              :key="index"
-              class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-              @click="goShow(item.id)"
+            v-for="(column,index) in columns"
+            :key="index"
+            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            @click="goShow(item.id)"
           >
             {{ item[index] }}
           </td>
@@ -133,21 +125,21 @@
               class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2 flex justify-around">
             <template v-for="(action, i) in rowActions" :key="i">
               <component
-                  v-if="action.href"
-                  :is="action.component || 'a'"
-                  :href="action.href(item)"
-                  :class="action.class"
-                  :title="$t(action.label)"
-                  class="flex items-center space-x-1"
+                v-if="action.href"
+                :is="action.component || 'a'"
+                :href="action.href(item)"
+                :class="action.class"
+                :title="$t(action.label)"
+                class="flex items-center space-x-1"
               >
                 <component :is="action.icon" class="w-4 h-4"/>
               </component>
               <button
-                  v-else
-                  @click="() => action.onClick(item)"
-                  :class="action.class"
-                  :title="$t(action.label)"
-                  class="flex items-center space-x-1"
+                v-else
+                @click="() => action.onClick(item)"
+                :class="action.class"
+                :title="$t(action.label)"
+                class="flex items-center space-x-1"
               >
                 <component :is="action.icon" class="w-4 h-4"/>
               </button>
@@ -157,62 +149,66 @@
         </tbody>
       </table>
     </div>
-
+    
     <!-- Tarjetas (solo en pantallas pequeñas) -->
-
+    
     <div class="block md:hidden">
       <!-- Filtro -->
-      <div class="py-4 flex justify-between items-center">
+      <div class="py-4 flex w-full">
         <input
-            type="text"
-            v-model="search"
-            @input="debouncedSearch"
-            :placeholder="$t('search')+'...'"
-            class="border px-4 py-2 rounded w-full max-w-sm text-sm"
+          type="text"
+          v-model="filters['search'].value"
+          @input="debouncedSearch"
+          :placeholder="$t('search')+'...'"
+          class="border px-4 py-2 rounded w-full text-sm"
         />
       </div>
+      <div v-if="!pagination.data.length">
+        <NoData/>
+      </div>
       <div
-          v-for="item in pagination.data"
-          :key="item.id"
-          class="border rounded-lg p-2 shadow-sm mt-2"
+        v-else
+        v-for="item in pagination.data"
+        :key="item.id"
+        class="border rounded-lg p-2 shadow-sm mt-2"
       >
         <div class="flex justify-end">
           <template v-for="(action, i) in rowActions" :key="i">
             <button
-                @click="() => action.onClick(item)"
-                :class="action.class"
-                class="flex mr-2 items-center space-x-1"
+              @click="() => action.onClick(item)"
+              :class="action.class"
+              class="flex mr-2 items-center space-x-1"
             >
               <component :is="action.icon" class="w-4 h-4"/>
             </button>
           </template>
         </div>
         <div
-            v-for="column in columns"
-            :key="column.key"
-            class="mb-1 text-sm"
+          v-for="(column,index) in columns"
+          :key="column.key"
+          class="mb-1 text-sm"
         >
-          <span class="font-semibold text-gray-600 ">{{ column.label }}:</span>
-          <span class="ml-1 text-gray-900">{{ column }}</span>
+          <span class="font-semibold text-gray-600 ">{{ $t(column.label) }}:</span>
+          <span class="ml-1 text-gray-900">{{ item[index] }}</span>
         </div>
       </div>
     </div>
-
+    
     <!-- Paginación -->
-    <div class="flex justify-end items-center p-4 space-x-2 text-sm">
+    <div v-if="pagination.data.length" class="flex justify-end items-center p-4 space-x-2 text-sm">
       <Component
-          v-for="(link, index) in pagination.links"
-          :key="index"
-          :is="link.url ? Link : 'span'"
-          :href="link.url"
-          class="px-3 py-1 rounded border"
-          :class="{
+        v-for="(link, index) in pagination.links"
+        :key="index"
+        :is="link.url ? Link : 'span'"
+        :href="link.url"
+        class="px-3 py-1 rounded border"
+        :class="{
           'bg-blue-500 text-white': link.active,
           'text-gray-700 hover:bg-gray-100': !link.active && link.url,
           'text-gray-400': !link.url,
         }"
-          v-html="formatLabel(link.label)"
-          preserve-scroll
+        v-html="formatLabel(link.label)"
+        preserve-scroll
       />
     </div>
   </div>
@@ -222,6 +218,7 @@
 import {Link} from '@inertiajs/vue3';
 import {computed, onBeforeMount, onMounted, reactive, ref} from 'vue';
 import debounce from 'lodash/debounce';
+import NoData from "@/Components/NoData.vue";
 
 const props = defineProps({
   columns: Object,
@@ -288,7 +285,7 @@ const debouncedSearch = debounce(() => {
 }, 500);
 
 function applyFilters() {
-  emits('changeFilters', {search: search.value, filters: props.filters})
+  emits('changeFilters', props.filters)
 }
 
 const goShow = (id) => {
