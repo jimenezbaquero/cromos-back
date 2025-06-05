@@ -17,7 +17,7 @@ class OptionHelper {
     }
 
     public static function getRoleOptions() {
-        $roles = Role::all();
+        $roles = Role::where('name','<>','guest')->get();
         $pairs = [];
         foreach ($roles as $role) {
             $pairs[] = (object)['name' => $role['name'], 'id' => $role['id']];

@@ -78,7 +78,7 @@
                                     "password": {
                                         "type": "string",
                                         "format": "password",
-                                        "example": "12345678"
+                                        "example": "password"
                                     }
                                 },
                                 "type": "object"
@@ -181,6 +181,93 @@
                                 "schema": {
                                     "properties": {
                                         "collections": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Coleccion"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/subscribedCollections": {
+            "get": {
+                "tags": [
+                    "Colecciones"
+                ],
+                "summary": "Obtener todas las colecciones del usuario",
+                "description": "Retorna una lista de todas las colecciones a las que el usuario se ha suscrito.",
+                "operationId": "74445568c789650dda4f840d219296ac",
+                "responses": {
+                    "200": {
+                        "description": "Listado de colecciones obtenido con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "collections": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Coleccion"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cards/{collection}": {
+            "get": {
+                "tags": [
+                    "Colecciones"
+                ],
+                "summary": "Obtener todos los cromos de una colección",
+                "description": "Retorna una lista de todos los cromos de una colección.",
+                "operationId": "2ec15b354aaf72060f124317c49c68f3",
+                "parameters": [
+                    {
+                        "name": "collection",
+                        "in": "path",
+                        "description": "ID de la colección",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de cromos obtenido con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "cards": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Coleccion"

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helper\FiltersHelper;
+use App\Helper\HeadersHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
@@ -32,8 +34,8 @@ class UserController extends Controller
     
     public function index(Request $request)
     {
-        $filters = $this->userService->getFilters();
-        $headers = $this->userService->getHeaders();
+        $filters = FiltersHelper::getUserFilter();
+        $headers = HeadersHelper::getUserHeaders();
         $users = $this->userService->getUsersWithFilters($filters);
         
         $transformedUsers = $users->getCollection()->map(function ($user) {
@@ -48,7 +50,7 @@ class UserController extends Controller
             'users' => $users,
             'filters' => $filters,
             'headers' => $headers,
-            'funnels' => $this->userService->getFunnelOptions(),
+            'funnels' => FiltersHelper::getUserFunnelOptions(),
             'roles' => $roles
         ]);
     }

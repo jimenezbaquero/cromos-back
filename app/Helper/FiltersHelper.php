@@ -23,9 +23,9 @@ class FiltersHelper
             foreach ($filters['filters'] as $key => $filter) {
                 if ($filter['value'] != '') {
                     $query->where($filter['field'], 'like', '%' . $filter['value'] . '%');
-                }else if(!empty($filter['funnel'])){
+                } else if (!empty($filter['funnel'])) {
                     $cont = 0;
-                    if(!in_array($key,['role'])) {
+                    if (!str_contains($filter['field'], 'relation')) {
                         $query->where(function ($q) use ($cont, $filter) {
                             foreach ($filter['funnel'] as $option) {
                                 if (isset($option['value']) && $option['value']) {
@@ -36,19 +36,16 @@ class FiltersHelper
                             }
                         });
                     } else {
-                        switch ($key){
-                            case('role'):{
-                                $query->whereHas('roles', function($q) use ($filter,$cont) {
-                                    foreach ($filter['funnel'] as $option) {
-                                        if (isset($option['value']) && $option['value']) {
-                                            $action = $cont == 0 ? 'where' : 'orWhere';
-                                            $q->$action($filter['field'], $option['id']);
-                                            $cont++;
-                                        }
-                                    }
-                                });
+                        $relation = explode('_', $filter['field'])[1];
+                        $query->whereHas($relation, function ($q) use ($filter, $cont) {
+                            foreach ($filter['funnel'] as $option) {
+                                if (isset($option['value']) && $option['value']) {
+                                    $action = $cont == 0 ? 'where' : 'orWhere';
+                                    $q->$action('id', $option['id']);
+                                    $cont++;
+                                }
                             }
-                        }
+                        });
                     }
                 }
                 if ($filter['sort'] != '') {
@@ -56,7 +53,49 @@ class FiltersHelper
                 }
             }
         }
-
+        
         return $query;
+    }
+    
+    public static function getUserFilter() {
+        return [
+            'id' => [
+                'field' => 'users.id',
+                'value' => '',
+                'sort' => '',
+            ],
+            'name' => [
+                'field' => 'users.name',
+                'value' => '',
+                'sort' => '',
+            ],
+            'email' => [
+                'field' => 'users.email',
+                'value' => '',
+                'sort' => '',
+            ],
+            'role' => [
+                'field' => 'relation_roles',
+                'value' => '',
+                'sort' => '',
+                'funnel' => []
+            ],
+            'created_at' => [
+                'field' => 'users.created_at',
+                'value' => '',
+                'sort' => '',
+            ],
+            'search' => [
+                'field' => 'users.name|users.email',
+                'value' => '',
+                'sort' => '',
+            ],
+        ];
+    }
+    
+    public static function getUserFunnelOptions() {
+        return [
+            "role" => OptionHelper::getRoleOptions(),
+        ];
     }
 }

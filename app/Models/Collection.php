@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Collection extends Model
 {
@@ -34,5 +35,9 @@ class Collection extends Model
     
     public function cards(): \Illuminate\Database\Eloquent\Relations\HasMany {
         return $this->hasMany(Card::class);
+    }
+    
+    public function users(): BelongsToMany {
+        return $this->belongsToMany(User::class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Collection;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -22,9 +23,13 @@ class UserSeeder extends Seeder
 
         // Crear 10 usuarios cliente
         $clients = User::factory(10)->create();
-
-        foreach ($clients as $client) {
+        
+        $clients->each(function ($client) {
             $client->assignRole('client');
-        }
+            $collectionIds = Collection::pluck('id')->toArray();
+            $randomIds = collect($collectionIds)->shuffle()->take(rand(1, count($collectionIds)))->toArray();
+            $client->collections()->sync($randomIds);
+        });
+        
     }
 }

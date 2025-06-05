@@ -57,7 +57,7 @@ class AuthController extends Controller
 
         return response()->json(['user' => $user, 'token' => $token], 201);
     }
-
+    
     /**
      * @OA\Post(
      *     path="/api/login",
@@ -66,9 +66,19 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"email","password"},
-     *             @OA\Property(property="email", type="string", format="email", example="juan@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="12345678")
+     *             required={"email", "password"},
+     *             @OA\Property(
+     *                 property="email",
+     *                 type="string",
+     *                 format="email",
+     *                 example="juan@example.com"
+     *             ),
+     *             @OA\Property(
+     *                 property="password",
+     *                 type="string",
+     *                 format="password",
+     *                 example="password"
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -81,6 +91,8 @@ class AuthController extends Controller
      *     )
      * )
      */
+
+
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();

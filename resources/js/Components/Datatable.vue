@@ -52,23 +52,26 @@
                           v-model="option.value"
                           class="mr-2"
                       />
-                      {{ option.label }}
+                      {{ $t(option.label.toLowerCase()) }}
                     </li>
                   </ul>
                 </div>
               </div>
               <template v-if="column.filterable">
+                <label :for="'filter-' + index" class="text-sm text-gray-600">
+                  {{ $t(column.label.toLowerCase()) }}
+                </label>
                 <input
-                    type="text"
-                    v-model="filters[index].value"
-                    @input="debouncedSearch"
-                    class="px-2 py-1 rounded text-sm border-none w-full"
-                    :placeholder="column.label"
-                >
+                  :id="'filter-' + index"
+                  :type="column.type"
+                  v-model="filters[index].value"
+                  @input="debouncedSearch"
+                  class="px-2 py-1 rounded text-sm border-none w-full"
+                />
               </template>
               <template v-else>
                 <div class="px-2 py-1 rounded text-sm border-none w-full">
-                  {{ column.label }}
+                  {{ $t(column.label.toLowerCase()) }}
                 </div>
 
               </template>

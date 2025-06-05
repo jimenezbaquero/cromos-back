@@ -11,4 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     
     Route::get('collections',[CollectionController::class, 'getCollections']);
+    Route::get('subscribedCollections',[CollectionController::class, 'getSubscribedCollections']);
+    Route::get('cards/{collection}',[CollectionController::class, 'getSCardsCollection']);
+    
 });
