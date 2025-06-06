@@ -26,10 +26,13 @@
         
         <div class="bg-white rounded-lg pt-0">
           <Datatable
-            :columns="columns"
-            :pagination="publishers"
+            :columns="headers"
+            :pagination="filteredData"
             :filters="filters"
             :row-actions="rowActions"
+            :go_show="true"
+            @goShow = "goShow"
+            @changeFilters = "changeFilters"
           />
         </div>
       </div>
@@ -47,17 +50,14 @@ import { PencilSquareIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
   publishers: Object,
-  filters: Object
+  filters: Object,
+  headers: Object
 })
 
 const { t } = useI18n()
 const isLoading = ref(false)
 
-const columns = computed(() => [
-  { key: 'id', label: 'ID', sortable: true },
-  { key: 'name', label: t('name'), sortable: true },
-  { key: 'created_at', label: t('created_at'), sortable: true }
-])
+const filteredData = ref(props.publishers)
 
 const rowActions = [
   {
@@ -68,5 +68,16 @@ const rowActions = [
   }
 ]
 
-const filters = props.filters || {}
+function goShow(id){
+  router.visit(route('admin.publishers.show', id))
+}
+
+const changeFilters = (filters) => {
+  isLoading.value = true
+  axios.post(route('admin.publishers.getData'),filters)
+    .then((response) => {
+      filteredData.value = response.data
+      isLoading.value = false
+    })
+}
 </script>

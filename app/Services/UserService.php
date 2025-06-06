@@ -11,7 +11,7 @@ use Illuminate\Auth\Events\Registered;
 
 class UserService
 {
-    public function getUsersWithFilters($filters)
+    public function getDataWithFilters($filters)
     {
         $query = User::with('roles');
 

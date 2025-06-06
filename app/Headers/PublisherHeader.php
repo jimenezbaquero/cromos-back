@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Helper;
+namespace App\Headers;
 
-class HeadersHelper
+class PublisherHeader
 {
-    public static function getUserHeaders(){
+    public static function getHeaders(){
         return [
             'id' => [
                 'label' => 'id',
@@ -18,18 +18,11 @@ class HeadersHelper
                 'filterable' => true,
                 'sortable' => true,
             ],
-            'email' => [
-                'label' => 'email',
-                'type' => 'text',
+            'collections' => [
+                'label' => 'collections',
+                'type' => 'number',
                 'filterable' => true,
                 'sortable' => true,
-            ],
-            'role' => [
-                'label' => 'role',
-                'type' => 'text',
-                'filterable' => false,
-                'sortable' => true,
-                'funnel' => true
             ],
             'created_at' => [
                 'label' => 'created_at',

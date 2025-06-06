@@ -85,7 +85,9 @@ Route::group([
 ], function () {
     Route::resource('users', UserController::class);
     Route::post('getData',[UserController::class,'getData'])->name('users.getData');
+    
     Route::resource('publishers', PublisherController::class)->except(['show','destroy']);
+    Route::post('getData',[PublisherController::class,'getData'])->name('publishers.getData');
     
     Route::resource('collections', CollectionController::class);
     

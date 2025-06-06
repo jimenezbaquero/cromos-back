@@ -58,46 +58,4 @@ class FiltersHelper
         
         return $query;
     }
-    
-    public static function getUserFilter() {
-        return [
-            'id' => [
-                'field' => 'users.id',
-                'value' => '',
-                'sort' => '',
-            ],
-            'name' => [
-                'field' => 'users.name',
-                'value' => '',
-                'sort' => '',
-            ],
-            'email' => [
-                'field' => 'users.email',
-                'value' => '',
-                'sort' => '',
-            ],
-            'role' => [
-                'field' => 'relation_roles',
-                'value' => '',
-                'sort' => '',
-                'funnel' => []
-            ],
-            'created_at' => [
-                'field' => 'users.created_at',
-                'value' => '',
-                'sort' => '',
-            ],
-            'search' => [
-                'field' => 'users.name|users.email',
-                'value' => '',
-                'sort' => '',
-            ],
-        ];
-    }
-    
-    public static function getUserFunnelOptions() {
-        return [
-            "role" => OptionHelper::getRoleOptions(),
-        ];
-    }
 }

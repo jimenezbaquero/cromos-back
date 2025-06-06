@@ -2,24 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helper\FiltersHelper;
-use App\Helper\HeadersHelper;
+use App\Filters\UserFilter;
+use App\Headers\UserHeader;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Services\RoleService;
 use App\Services\UserService;
 use App\Transformers\UserTransformer;
-use Carbon\Carbon;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use Mockery\Exception;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -34,9 +28,9 @@ class UserController extends Controller
     
     public function index(Request $request)
     {
-        $filters = FiltersHelper::getUserFilter();
-        $headers = HeadersHelper::getUserHeaders();
-        $users = $this->userService->getUsersWithFilters($filters);
+        $filters = UserFilter::getFilters();
+        $headers = UserHeader::getHeaders();
+        $users = $this->userService->getDataWithFilters($filters);
         
         $transformedUsers = $users->getCollection()->map(function ($user) {
             return UserTransformer::transformToWebIndex($user);
@@ -50,7 +44,7 @@ class UserController extends Controller
             'users' => $users,
             'filters' => $filters,
             'headers' => $headers,
-            'funnels' => FiltersHelper::getUserFunnelOptions(),
+            'funnels' => UserFilter::getFunnelOptions(),
             'roles' => $roles
         ]);
     }
@@ -121,14 +115,18 @@ class UserController extends Controller
     }
     
     public function getData(Request $request){
-        $users  = $this->userService->getUsersWithFilters($request->all());
-        $transformedUsers = $users->getCollection()->map(function ($user) {
-            return UserTransformer::transformToWebIndex($user);
+        $users  = $this->getDataWithFilters($request);
+        return response()->json($users);
+    }
+    
+    public function getDataWithFilters(Request $request){
+        $users  = $this->userService->getDataWithFilters($request->all());
+        $transforms = $users->getCollection()->map(function ($item) {
+            return UserTransformer::transformToWebIndex($item);
         });
         
-        $users->setCollection($transformedUsers);
-        return response()->json($users);
-        
+        $users->setCollection($transforms);
+        return $users;
     }
 }
 

@@ -241,9 +241,11 @@ const props = defineProps({
 
 const openFunnel = ref({})
 
-Object.keys(props.funnels).forEach((key) => {
-  openFunnel.value[key] = false
-})
+if(props.funnels) {
+  Object.keys(props.funnels).forEach((key) => {
+    openFunnel.value[key] = false
+  })
+}
 
 const filteredData = computed(() => {
   return pagination.data.filter(item => {

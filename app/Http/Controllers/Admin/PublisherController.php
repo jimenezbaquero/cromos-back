@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\PublisherFilter;
+use App\Headers\PublisherHeader;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PublisherRequest;
 use App\Models\Publisher;
+use App\Services\PublisherService;
+use App\Transformers\PublisherTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,34 +17,24 @@ use Carbon\Carbon;
 
 class PublisherController extends Controller
 {
+    protected $publisherService;
+    
+    public function __construct(PublisherService $publisherService)
+    {
+        $this->publisherService = $publisherService;
+    }
+    
     public function index(Request $request)
     {
-        $query = Publisher::query();
+        $filters = PublisherFilter::getFilters();
+        $headers = PublisherHeader::getHeaders();
         
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where('name', 'like', "%$search%");
-        }
-        
-        if ($request->filled('sort') && in_array($request->input('sort'), ['name', 'id'])) {
-            $query->orderBy($request->input('sort'), $request->input('direction') === 'desc' ? 'desc' : 'asc');
-        }
-        
-        $publishers = $query->paginate(10)->withQueryString();
-        
-        $data = [];
-        foreach ($publishers as $key=>$publisher) {
-            
-            $publishers[$key] = [
-                'id' => $publisher->id,
-                'name' => $publisher->name,
-                'created_at' => Carbon::parse($publisher->created_at)->format('d/m/Y'),
-            ];
-        }
+        $publishers = $this->getDataWithFilters($request);
         
         return Inertia::render('Admin/Publishers/Index', [
             'publishers' => $publishers,
-            'filters' => $request->only('search', 'sort', 'direction'),
+            'filters' => $filters,
+            'headers' => $headers,
         ]);
     }
     
@@ -89,5 +83,20 @@ class PublisherController extends Controller
             Log::error('Error al actualizar editorial: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Hubo un problema al actualizar la editorial']);
         }
+    }
+    
+    public function getData(Request $request){
+        $publishers = $this->getDataWithFilters($request);
+        return response()->json($publishers);
+    }
+    
+    public function getDataWithFilters(Request $request){
+        $publishers  = $this->publisherService->getDataWithFilters($request->all());
+        $transforms = $publishers->getCollection()->map(function ($item) {
+            return PublisherTransformer::transformToWebIndex($item);
+        });
+        
+        $publishers->setCollection($transforms);
+        return $publishers;
     }
 }
