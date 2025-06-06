@@ -62,7 +62,6 @@ import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
   users: Object,
-  roles: Array,
   headers: Object,
   filters: Object,
   funnels: Object

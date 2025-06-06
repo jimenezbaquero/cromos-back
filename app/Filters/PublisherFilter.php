@@ -17,7 +17,7 @@ class PublisherFilter
                 'sort' => '',
             ],
             'collections' => [
-                'field' => 'relation.collections',
+                'field' => 'collections_count',
                 'value' => '',
                 'sort' => '',
             ],
@@ -31,6 +31,9 @@ class PublisherFilter
                 'value' => '',
                 'sort' => '',
             ],
+            'page' => [
+                'value' => 1
+            ]
         ];
     }
 }

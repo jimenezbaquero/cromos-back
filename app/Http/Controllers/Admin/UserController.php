@@ -19,33 +19,24 @@ class UserController extends Controller
 {
     protected $userService;
     protected $roleService;
-    
+
     public function __construct(UserService $userService, RoleService $roleService)
     {
         $this->userService = $userService;
         $this->roleService = $roleService;
     }
-    
+
     public function index(Request $request)
     {
         $filters = UserFilter::getFilters();
         $headers = UserHeader::getHeaders();
-        $users = $this->userService->getDataWithFilters($filters);
-        
-        $transformedUsers = $users->getCollection()->map(function ($user) {
-            return UserTransformer::transformToWebIndex($user);
-        });
-        
-        $users->setCollection($transformedUsers);
-        
-        $roles = $this->roleService->getRoles();
+        $users = $this->getDataWithFilters($request);
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
             'filters' => $filters,
             'headers' => $headers,
             'funnels' => UserFilter::getFunnelOptions(),
-            'roles' => $roles
         ]);
     }
 
@@ -83,7 +74,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = $this->roleService->getRoles();
-        
+
         $user['role'] = $user->roles()->first()->name;
 
         return Inertia::render('Admin/Users/Edit', [
@@ -113,18 +104,18 @@ class UserController extends Controller
             return back()->withErrors(['error' => __('user_delete_error')]);
         }
     }
-    
+
     public function getData(Request $request){
         $users  = $this->getDataWithFilters($request);
         return response()->json($users);
     }
-    
+
     public function getDataWithFilters(Request $request){
         $users  = $this->userService->getDataWithFilters($request->all());
         $transforms = $users->getCollection()->map(function ($item) {
             return UserTransformer::transformToWebIndex($item);
         });
-        
+
         $users->setCollection($transforms);
         return $users;
     }

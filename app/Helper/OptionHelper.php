@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use App\Models\Collection;
+use App\Models\Publisher;
 use Spatie\Permission\Models\Role;
 
 class OptionHelper {
@@ -21,6 +22,15 @@ class OptionHelper {
         $pairs = [];
         foreach ($roles as $role) {
             $pairs[] = (object)['name' => $role['name'], 'id' => $role['id']];
+        }
+        return self::createOptions($pairs);
+    }
+
+    public static function getPublisherOptions() {
+        $publishers = Publisher::all();
+        $pairs = [];
+        foreach ($publishers as $publisher) {
+            $pairs[] = (object)['name' => $publisher['name'], 'id' => $publisher['id']];
         }
         return self::createOptions($pairs);
     }

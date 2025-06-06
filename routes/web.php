@@ -29,7 +29,7 @@ Route::get('/', function () {
 
 Route::post('/language', function (Illuminate\Http\Request $request) {
     $lang = $request->input('locale');
-    
+
     if (in_array($lang, [
         'en',
         'es',
@@ -84,19 +84,32 @@ Route::group([
     'as' => 'admin.'
 ], function () {
     Route::resource('users', UserController::class);
-    Route::post('getData',[UserController::class,'getData'])->name('users.getData');
-    
+    Route::group([
+        'prefix' => 'users',
+    ],function() {
+        Route::post('getData', [UserController::class,'getData'])->name('users.getData');
+    });
     Route::resource('publishers', PublisherController::class)->except(['show','destroy']);
-    Route::post('getData',[PublisherController::class,'getData'])->name('publishers.getData');
-    
+    Route::group([
+        'prefix' => 'publishers',
+    ],function() {
+        Route::post('getData', [PublisherController::class,'getData'])->name('publishers.getData');
+    });
+
     Route::resource('collections', CollectionController::class);
-    
+    Route::group([
+        'prefix' => 'collections',
+    ],function() {
+        Route::post('getData', [CollectionController::class,'getData'])->name('collections.getData');
+    });
+
     Route::resource('cards', CardController::class);
     Route::group([
         'prefix' => 'cards',
     ],function() {
         Route::get('/showCardsCollection/{collection}', [CardController::class, 'showCardsCollection'])->name('cards.showCardsCollection');
     });
+
     Route::resource('cardtypes', CardTypeController::class);
 });
 

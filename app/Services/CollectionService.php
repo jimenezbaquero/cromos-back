@@ -3,17 +3,17 @@
 namespace App\Services;
 
 use App\Helper\FiltersHelper;
-use App\Models\Publisher;
+use App\Models\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Registered;
 
-class PublisherService
+class CollectionService
 {
     public function getDataWithFilters($filters)
     {
-        $query = Publisher::with('collections');
+        $query = Collection::query();
 
         if(!empty($filters)) {
            $query = FiltersHelper::applyTableFilter($query, $filters);
@@ -22,16 +22,19 @@ class PublisherService
         return $query->paginate(10, ['*'], 'page', $page)->withQueryString();
     }
 
-    public function createPublisher(array $data)
+    public function createCollection(array $data)
     {
         try {
-            $publisher = Publisher::create([
+            $collection = Collection::create([
                 'name' => $data['name'],
+                'description' => $data['description'],
+                'year' => $data['year'],
+                'publisher_id' => $data['publisher_id']
             ]);
 
-            return $publisher;
+            return $collection;
         } catch (\Throwable $e) {
-            Log::error('Error al crear editorial : ' . $e->getMessage(), [
+            Log::error('Error al crear colección: ' . $e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
                 'input' => $data,
             ]);
@@ -39,16 +42,24 @@ class PublisherService
         }
     }
 
-    public function updatePublisher(Publisher $publisher, array $data)
+    public function updateCollection(Collection $collection, array $data)
     {
+        DB::beginTransaction();
         try {
-            $publisher->update([
+            $collection->update([
                 'name' => $data['name'],
+                'description' => $data['description'],
+                'year' => $data['year'],
             ]);
 
-            return $publisher;
+            $collection->publisher()->attach($data['publisher_id']);
+
+            DB::commit();
+
+            return $collection;
         } catch (\Throwable $e) {
-            Log::error('Error al actualizar editorial: ' . $e->getMessage(), [
+            DB::rollBack();
+            Log::error('Error al actualizar colección: ' . $e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
                 'input' => $data,
             ]);
@@ -56,13 +67,13 @@ class PublisherService
         }
     }
 
-    public function deletePublisher(Publisher $publisher): bool
+    public function deleteCollection(Collection $collection): bool
     {
         try {
-            $publisher->delete();
+            $collection->delete();
             return true;
         } catch (\Throwable $e) {
-            Log::error('Error al eliminar editorial: ' . $e->getMessage());
+            Log::error('Error al eliminar colección: ' . $e->getMessage());
             return false;
         }
     }

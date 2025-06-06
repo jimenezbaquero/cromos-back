@@ -4,38 +4,43 @@ namespace App\Filters;
 
 use App\Helper\OptionHelper;
 
-class UserFilter
+class CollectionFilter
 {
     public static function getFilters() {
         return [
             'id' => [
-                'field' => 'users.id',
+                'field' => 'collections.id',
                 'value' => '',
                 'sort' => '',
             ],
             'name' => [
-                'field' => 'users.name',
+                'field' => 'collections.name',
                 'value' => '',
                 'sort' => '',
             ],
-            'email' => [
-                'field' => 'users.email',
+            'description' => [
+                'field' => 'collections.description',
                 'value' => '',
                 'sort' => '',
             ],
-            'role' => [
-                'field' => 'relation_roles',
+            'publisher' => [
+                'field' => 'collections.publisher_id',
                 'value' => '',
                 'sort' => '',
                 'funnel' => []
             ],
+            'cards' => [
+                'field' => 'cards_count',
+                'value' => '',
+                'sort' => '',
+            ],
             'created_at' => [
-                'field' => 'users.created_at',
+                'field' => 'collections.created_at',
                 'value' => '',
                 'sort' => '',
             ],
             'search' => [
-                'field' => 'users.name|users.email',
+                'field' => 'collections.name|collections.description',
                 'value' => '',
                 'sort' => '',
             ],
@@ -47,7 +52,7 @@ class UserFilter
 
     public static function getFunnelOptions() {
         return [
-            "role" => OptionHelper::getRoleOptions(),
+            "publisher" => OptionHelper::getPublisherOptions(),
         ];
     }
 }

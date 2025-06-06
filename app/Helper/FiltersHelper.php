@@ -20,11 +20,16 @@ class FiltersHelper
             });
         } else {
             foreach ($filters as $key => $filter) {
-                if($key == 'search'){
+                if(in_array($key ,['search','page'])){
                     continue;
                 }
                 if ($filter['value'] != '') {
-                    $query->where($filter['field'], 'like', '%' . $filter['value'] . '%');
+                    if (str_contains($filter['field'],'count')){
+                        $relation = explode('_', $filter['field'])[0];
+                        $query->withCount($relation)->having($relation.'_count',$filter['value']);
+                    } else {
+                        $query->where($filter['field'], 'like', '%' . $filter['value'] . '%');
+                    }
                 } else if (!empty($filter['funnel'])) {
                     $cont = 0;
                     if (!str_contains($filter['field'], 'relation')) {
@@ -37,8 +42,8 @@ class FiltersHelper
                                 }
                             }
                         });
-                    } else {
-                        $relation = explode('_', $filter['field'])[1];
+                    } else if(str_contains($filter['field'],'relation')){
+                        $relation = explode('_', $filter['field'])[0];
                         $query->whereHas($relation, function ($q) use ($filter, $cont) {
                             foreach ($filter['funnel'] as $option) {
                                 if (isset($option['value']) && $option['value']) {
@@ -51,11 +56,15 @@ class FiltersHelper
                     }
                 }
                 if ($filter['sort'] != '') {
+                    if (str_contains($filter['field'], 'count')) {
+                        $relation = explode('_', $filter['field'])[0];
+                        $query->withCount($relation);
+                    }
                     $query->orderBy($filter['field'], $filter['sort']);
                 }
             }
         }
-        
+
         return $query;
     }
 }
