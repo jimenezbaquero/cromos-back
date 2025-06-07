@@ -27,7 +27,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-          node-version: '22.2'  
+          node-version: '22.x'  
     - name: Install JS dependencies
       run: npm ci
 
