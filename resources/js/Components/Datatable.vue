@@ -119,7 +119,12 @@
             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
             @click="goShow(item.id)"
           >
-            {{ item[index] }}
+            <template v-if="column.type == 'image'">
+              <img :src="item[index]" :alt="$t('card')+' '+item.number" class="h-24 w-24 object-cover" />
+            </template>
+            <template v-else>
+              {{ item[index] }}
+            </template>
           </td>
           <td v-if="rowActions?.length"
               class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2 flex justify-around">
@@ -283,7 +288,7 @@ function sortBy(index) {
 }
 
 const debouncedSearch = debounce(() => {
-  props.filters['page'].value = 1
+  props.filters['page'].page = 1
   applyFilters();
 }, 500);
 
@@ -317,11 +322,11 @@ function selectAll(index) {
 function changePage(page){
   console.log(page)
   if(page.includes('previous')){
-    props.filters['page'].value = parseInt(props.filters['page'].value) - 1
+    props.filters['page'].page = parseInt(props.filters['page'].page) - 1
   }else if (page.includes('next')) {
-    props.filters['page'].value = parseInt(props.filters['page'].value) + 1
+    props.filters['page'].page = parseInt(props.filters['page'].page) + 1
   }else {
-    props.filters['page'].value = page
+    props.filters['page'].page = page
   }
   applyFilters()
 }

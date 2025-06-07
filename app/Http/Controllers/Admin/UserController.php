@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Filters\UserFilter;
 use App\Headers\UserHeader;
+use App\Helper\TransformHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Services\RoleService;
 use App\Services\UserService;
+use App\Transformers\CardTransformer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -112,12 +114,7 @@ class UserController extends Controller
 
     public function getDataWithFilters(Request $request){
         $users  = $this->userService->getDataWithFilters($request->all());
-        $transforms = $users->getCollection()->map(function ($item) {
-            return UserTransformer::transformToWebIndex($item);
-        });
-
-        $users->setCollection($transforms);
-        return $users;
+        return TransformHelper::transform(UserTransformer::class, $users);
     }
 }
 

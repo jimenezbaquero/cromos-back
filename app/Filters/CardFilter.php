@@ -4,17 +4,12 @@ namespace App\Filters;
 
 use App\Helper\OptionHelper;
 
-class CollectionFilter
+class CardFilter
 {
     public static function getFilters() {
         return [
-            'id' => [
-                'field' => 'collections.id',
-                'value' => '',
-                'sort' => '',
-            ],
-            'name' => [
-                'field' => 'collections.name',
+            'number' => [
+                'field' => 'cards.number',
                 'value' => '',
                 'sort' => '',
             ],
@@ -23,14 +18,20 @@ class CollectionFilter
                 'value' => '',
                 'sort' => '',
             ],
-            'publisher' => [
-                'field' => 'collections.publisher_id',
+            'card_type' => [
+                'field' => 'cards.card_type_id',
                 'value' => '',
                 'sort' => '',
                 'funnel' => []
             ],
-            'cards' => [
-                'field' => 'cards_count',
+            'collection' => [
+                'field' => 'cards.collection_id',
+                'value' => '',
+                'sort' => '',
+                'funnel' => []
+            ],
+            'probability' => [
+                'field' => 'cards.probability',
                 'value' => '',
                 'sort' => '',
             ],
@@ -40,20 +41,21 @@ class CollectionFilter
                 'sort' => '',
             ],
             'search' => [
-                'field' => 'collections.name|collections.description',
+                'field' => 'cards.number|cards.probability',
                 'value' => '',
                 'sort' => '',
             ],
             'page' => [
                 'page' => 1,
-                'perPage' => 10
+                'perPage' => 5
             ]
         ];
     }
 
     public static function getFunnelOptions() {
         return [
-            "publisher" => OptionHelper::getPublisherOptions(),
+            "card_type" => OptionHelper::getCardTypeOptions(),
+            "collection" => OptionHelper::getCollectionOptions()
         ];
     }
 }

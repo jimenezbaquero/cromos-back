@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Filters\CollectionFilter;
 use App\Headers\CollectionHeader;
+use App\Helper\TransformHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CollectionRequest;
 use App\Models\Collection;
 use App\Models\Publisher;
 use App\Services\CollectionService;
 use App\Services\PublisherService;
+use App\Transformers\CardTransformer;
 use App\Transformers\collectionTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -137,12 +139,7 @@ class CollectionController extends Controller
 
     public function getDataWithFilters(Request $request){
         $collections  = $this->collectionService->getDataWithFilters($request->all());
-        $transforms = $collections->getCollection()->map(function ($item) {
-            return CollectionTransformer::transformToWebIndex($item);
-        });
-
-        $collections->setCollection($transforms);
-        return $collections;
+        return TransformHelper::transform(CollectionTransformer::class, $collections);
     }
 
 }

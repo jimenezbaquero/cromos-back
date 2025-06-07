@@ -108,6 +108,7 @@ Route::group([
         'prefix' => 'cards',
     ],function() {
         Route::get('/showCardsCollection/{collection}', [CardController::class, 'showCardsCollection'])->name('cards.showCardsCollection');
+        Route::post('getData', [CardController::class,'getData'])->name('cards.getData');
     });
 
     Route::resource('cardtypes', CardTypeController::class);

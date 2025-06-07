@@ -42,7 +42,7 @@ class FiltersHelper
                                 }
                             }
                         });
-                    } else if(str_contains($filter['field'],'relation')){
+                    } else {
                         $relation = explode('_', $filter['field'])[0];
                         $query->whereHas($relation, function ($q) use ($filter, $cont) {
                             foreach ($filter['funnel'] as $option) {

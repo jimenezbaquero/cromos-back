@@ -3,23 +3,34 @@
 namespace App\Services;
 
 use App\Helper\FiltersHelper;
+use App\Models\Card;
 use App\Models\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Auth\Events\Registered;
 
-class CollectionService
+class CardService
 {
     public function getDataWithFilters($filters)
     {
-        $query = Collection::query();
+        $query = Card::query();
 
         if(!empty($filters)) {
            $query = FiltersHelper::applyTableFilter($query, $filters);
         }
         $page = $filters['page']['page']?? $filters['page']?? 1;
-        $perPage = $filters['page']['perPage']?? $filters['perPage']?? 10;
+        $perPage = $filters['page']['perPage']?? $filters['perPage']?? 5;
+        return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+    }
+
+    public function getDataByCollection($filters,Collection $collection)
+    {
+        $query = Card::where('collection_id',$collection->id);
+
+        if(!empty($filters)) {
+            $query = FiltersHelper::applyTableFilter($query, $filters);
+        }
+        $page = $filters['page']['page']?? $filters['page']?? 1;
+        $perPage = $filters['page']['perPage']?? $filters['perPage']?? 5;
         return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
     }
 

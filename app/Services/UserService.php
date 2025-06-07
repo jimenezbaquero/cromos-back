@@ -18,8 +18,9 @@ class UserService
         if(!empty($filters)) {
            $query = FiltersHelper::applyTableFilter($query, $filters);
         }
-        $page = $filters['page']['value']?? $filters['page']?? 1;
-        return $query->paginate(10, ['*'], 'page', $page)->withQueryString();
+        $page = $filters['page']['page']?? $filters['page']?? 1;
+        $perPage = $filters['page']['perPage']?? $filters['perPage']?? 10;
+        return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
     }
 
     public function createUser(array $data)

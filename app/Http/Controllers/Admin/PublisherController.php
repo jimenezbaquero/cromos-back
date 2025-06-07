@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Filters\PublisherFilter;
 use App\Headers\PublisherHeader;
+use App\Helper\TransformHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PublisherRequest;
 use App\Models\Publisher;
 use App\Services\PublisherService;
+use App\Transformers\CardTransformer;
 use App\Transformers\PublisherTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,35 +20,35 @@ use Carbon\Carbon;
 class PublisherController extends Controller
 {
     protected $publisherService;
-    
+
     public function __construct(PublisherService $publisherService)
     {
         $this->publisherService = $publisherService;
     }
-    
+
     public function index(Request $request)
     {
         $filters = PublisherFilter::getFilters();
         $headers = PublisherHeader::getHeaders();
-        
+
         $publishers = $this->getDataWithFilters($request);
-        
+
         return Inertia::render('Admin/Publishers/Index', [
             'publishers' => $publishers,
             'filters' => $filters,
             'headers' => $headers,
         ]);
     }
-    
+
     public function create()
     {
         return Inertia::render('Admin/Publishers/Create');
     }
-    
+
     public function store(PublisherRequest $request)
     {
         $data = $request->validated();
-        
+
         DB::beginTransaction();
         try {
             Publisher::create($data);
@@ -61,18 +63,18 @@ class PublisherController extends Controller
             return back()->withErrors(['error' => 'Hubo un problema al crear la editorial'])->withInput();
         }
     }
-    
+
     public function edit(Publisher $publisher)
     {
         return Inertia::render('Admin/Publishers/Edit', [
             'publisher' => $publisher,
         ]);
     }
-    
+
     public function update(PublisherRequest $request, Publisher $publisher)
     {
         $data = $request->validated();
-        
+
         DB::beginTransaction();
         try {
             $publisher->update($data);
@@ -84,19 +86,14 @@ class PublisherController extends Controller
             return back()->withErrors(['error' => 'Hubo un problema al actualizar la editorial']);
         }
     }
-    
+
     public function getData(Request $request){
         $publishers = $this->getDataWithFilters($request);
         return response()->json($publishers);
     }
-    
+
     public function getDataWithFilters(Request $request){
         $publishers  = $this->publisherService->getDataWithFilters($request->all());
-        $transforms = $publishers->getCollection()->map(function ($item) {
-            return PublisherTransformer::transformToWebIndex($item);
-        });
-        
-        $publishers->setCollection($transforms);
-        return $publishers;
+        return TransformHelper::transform(PublisherTransformer::class, $publishers);
     }
 }

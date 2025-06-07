@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Models\CardType;
 use App\Models\Collection;
 use App\Models\Publisher;
 use Spatie\Permission\Models\Role;
@@ -15,6 +16,24 @@ class OptionHelper {
                 'value' => false
             ];
         }, $collection);
+    }
+
+    public static function getCardTypeOptions() {
+        $cardTypes = CardType::all();
+        $pairs = [];
+        foreach ($cardTypes as $cardType) {
+            $pairs[] = (object)['name' => $cardType['name'], 'id' => $cardType['id']];
+        }
+        return self::createOptions($pairs);
+    }
+
+    public static function getCollectionOptions() {
+        $collection = Collection::all();
+        $pairs = [];
+        foreach ($collection as $collection) {
+            $pairs[] = (object)['name' => $collection['name'], 'id' => $collection['id']];
+        }
+        return self::createOptions($pairs);
     }
 
     public static function getRoleOptions() {

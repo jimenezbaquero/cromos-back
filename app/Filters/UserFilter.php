@@ -40,7 +40,8 @@ class UserFilter
                 'sort' => '',
             ],
             'page' => [
-                'value' => 1
+                'page' => 1,
+                'perPage' => 10
             ]
         ];
     }
