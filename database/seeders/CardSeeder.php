@@ -21,11 +21,12 @@ class CardSeeder extends Seeder
             $collection = Collection::inRandomOrder()->first();
             $cardType = CardType::inRandomOrder()->first();
             $combination = $this->chooseCombination($combinations, $collection);
+            $urlPhoto = $cardType->name == 'Horizontal' ? Storage::url('card_photos/cromo_horizontal.png') : Storage::url('card_photos/cromo_vertical.png');
             $data[] =[
                 'number' => $combination[0],
                 'collection_id' => $collection->id,
                 'card_type_id' => $cardType->id,
-                'url_photo' => $cardType->name == 'horizontal' ? Storage::url('card_photos/cromo_horizontal.png') : Storage::url('card_photos/cromo_vertical.png'),
+                'url_photo' => $urlPhoto,
                 'probability' => $this->chooseProbability(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

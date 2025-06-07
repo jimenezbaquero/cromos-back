@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-lg overflow-hidden">
-
-
+    
+    
     <!-- Tabla (solo en pantallas md en adelante) -->
     <div class="hidden md:block overflow-x-auto min-h-72">
       <table class="min-w-full divide-y divide-gray-200">
@@ -73,7 +73,7 @@
                 <div class="px-2 py-1 rounded text-sm border-none w-full">
                   {{ $t(column.label.toLowerCase()) }}
                 </div>
-
+              
               </template>
               <template v-if="column.sortable">
                 <div @click="sortBy(index)" class="cursor-pointer justify-end w-10 ">
@@ -81,18 +81,18 @@
                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/>
                   </svg>
-
+                  
                   <svg v-else-if="filters[index].sort === 'desc'" xmlns="http://www.w3.org/2000/svg" fill="none"
                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/>
                   </svg>
-
+                  
                   <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                        stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/>
                   </svg>
-
+                
                 </div>
               </template>
             </div>
@@ -110,7 +110,7 @@
           </td>
         </tr>
         </tbody>
-
+        
         <tbody v-else class="bg-white divide-y divide-gray-200">
         <tr v-for="item in pagination.data" :key="item.id" class="hover:bg-gray-200">
           <td
@@ -120,7 +120,7 @@
             @click="goShow(item.id)"
           >
             <template v-if="column.type == 'image'">
-              <img :src="item[index]" :alt="$t('card')+' '+item.number" class="h-24 w-24 object-cover" />
+              <img :src="item.url" :alt="$t('card')+' '+item.number" class="h-24 w-24 object-contain"/>
             </template>
             <template v-else>
               {{ item[index] }}
@@ -154,9 +154,9 @@
         </tbody>
       </table>
     </div>
-
+    
     <!-- Tarjetas (solo en pantallas pequeñas) -->
-
+    
     <div class="block md:hidden">
       <!-- Filtro -->
       <div class="py-4 flex w-full">
@@ -194,25 +194,30 @@
           class="mb-1 text-sm"
         >
           <span class="font-semibold text-gray-600 ">{{ $t(column.label) }}:</span>
-          <span class="ml-1 text-gray-900">{{ item[index] }}</span>
+          <template v-if="column.type == 'image'">
+            <img :src="item.url" :alt="$t('card')+' '+item.number" class="h-24 w-24 object-contain"/>
+          </template>
+          <template v-else>
+            <span class="ml-1 text-gray-900">{{ item[index] }}</span>
+          </template>
         </div>
       </div>
     </div>
-
+    
     <!-- Paginación -->
     <div v-if="pagination.data.length" class="flex justify-end items-center p-4 space-x-2 text-sm">
       <button
-          v-for="(link, index) in pagination.links"
-          :key="index"
-          :disabled="!link.url || link.active"
-          @click="changePage(link.label)"
-          class="px-3 py-1 rounded border"
-          :class="{
+        v-for="(link, index) in pagination.links"
+        :key="index"
+        :disabled="!link.url || link.active"
+        @click="changePage(link.label)"
+        class="px-3 py-1 rounded border"
+        :class="{
     'bg-blue-500 text-white': link.active,
     'text-gray-700 hover:bg-gray-100': !link.active && link.url,
     'text-gray-400 cursor-not-allowed': !link.url,
   }"
-          v-html="formatLabel(link.label)"
+        v-html="formatLabel(link.label)"
       />
     </div>
   </div>
@@ -245,7 +250,7 @@ const props = defineProps({
 
 const openFunnel = ref({})
 
-if(props.funnels) {
+if (props.funnels) {
   Object.keys(props.funnels).forEach((key) => {
     openFunnel.value[key] = false
   })
@@ -284,6 +289,7 @@ function sortBy(index) {
     }
   })
   props.filters[index].sort = direction === 'asc' ? 'desc' : direction === 'desc' ? '' : 'asc';
+  props.filters['page'].page = 1
   applyFilters();
 }
 
@@ -303,7 +309,7 @@ const goShow = (id) => {
 }
 
 function applyFunnelFilter(index) {
-  props.filters['page'].value = 1
+  props.filters['page'].page = 1
   props.filters[index].funnel = props.funnels[index].filter(item => item.value === true);
   props.filters[index].value = '';
   props.filters[index].sort = '';
@@ -319,13 +325,13 @@ function selectAll(index) {
   props.funnels[index].forEach(item => item.value = true);
 }
 
-function changePage(page){
+function changePage(page) {
   console.log(page)
-  if(page.includes('previous')){
+  if (page.includes('previous')) {
     props.filters['page'].page = parseInt(props.filters['page'].page) - 1
-  }else if (page.includes('next')) {
+  } else if (page.includes('next')) {
     props.filters['page'].page = parseInt(props.filters['page'].page) + 1
-  }else {
+  } else {
     props.filters['page'].page = page
   }
   applyFilters()

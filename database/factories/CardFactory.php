@@ -25,12 +25,12 @@ class CardFactory extends Factory
     {
         $collection = Collection::inRandomOrder()->first();
         $cardType = CardType::inRandomOrder()->first();
-
+        $urlPhoto =  str_contains($cardType->name,'Horizontal')? Storage::url('card_photos/cromo_horizontal.png') : Storage::url('card_photos/cromo_vertical.png');
         return [
             'number' => FactoryHelper::uniqueNumberInCollection(),
             'collection_id' => $collection->id,
             'card_type_id' => $cardType->id,
-            'url_photo'=> $cardType->name == 'horizontal'? Storage::path('card_photos/cromo_horizontal.png') : Storage::path('card_photos/cromo_vertical.png'),
+            'url_photo'=> $urlPhoto
         ];
     }
     
