@@ -4,13 +4,14 @@ namespace Tests\Feature\Admin;
 
 use App\Models\User;
 use App\Models\Publisher as Publisher;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class PublisherControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
     
     protected User $admin;
     protected User $client;

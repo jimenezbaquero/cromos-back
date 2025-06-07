@@ -5,13 +5,14 @@ namespace Tests\Feature\Admin;
 use App\Models\Collection;
 use App\Models\Publisher;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class CollectionControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
     
     protected User $admin;
     protected User $client;
