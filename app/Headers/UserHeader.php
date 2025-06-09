@@ -24,6 +24,12 @@ class UserHeader
                 'filterable' => true,
                 'sortable' => true,
             ],
+            'balance' => [
+                'label' => 'balance',
+                'type' => 'number',
+                'filterable' => true,
+                'sortable' => true,
+            ],
             'role' => [
                 'label' => 'role',
                 'type' => 'text',

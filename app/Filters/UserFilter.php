@@ -23,6 +23,13 @@ class UserFilter
                 'value' => '',
                 'sort' => '',
             ],
+            'balance' => [
+                'relation' => 'wallet',
+                'join' => ['wallets', 'wallets.holder_id','users.id'],
+                'field' => 'wallets.balance',
+                'value' => '',
+                'sort' => '',
+            ],
             'role' => [
                 'field' => 'relation_roles',
                 'value' => '',

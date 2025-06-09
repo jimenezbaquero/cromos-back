@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Bavix\Wallet\Interfaces\Customer;
+use Bavix\Wallet\Traits\CanPay;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -14,10 +16,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordContract
+class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordContract, Customer
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, CanResetPassword;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, CanResetPassword, CanPay;
 
     /**
      * The attributes that are mass assignable.

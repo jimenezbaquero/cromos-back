@@ -13,7 +13,7 @@ class UserService
 {
     public function getDataWithFilters($filters)
     {
-        $query = User::with('roles');
+        $query = User::with(['roles','wallet']);
 
         if(!empty($filters)) {
            $query = FiltersHelper::applyTableFilter($query, $filters);

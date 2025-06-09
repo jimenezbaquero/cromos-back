@@ -25,6 +25,7 @@ class UserSeeder extends Seeder
         $clients = User::factory(10)->create();
         
         $clients->each(function ($client) {
+            $client->deposit(rand(10,100));
             $client->assignRole('client');
             $collectionIds = Collection::pluck('id')->toArray();
             $randomIds = collect($collectionIds)->shuffle()->take(rand(1, count($collectionIds)))->toArray();

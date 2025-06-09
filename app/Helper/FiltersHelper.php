@@ -3,6 +3,8 @@
 namespace App\Helper;
 
 
+use App\Models\User;
+use Bavix\Wallet\Models\Wallet;
 use Illuminate\Database\Eloquent\Builder;
 
 class FiltersHelper
@@ -24,9 +26,13 @@ class FiltersHelper
                     continue;
                 }
                 if ($filter['value'] != '') {
-                    if (str_contains($filter['field'],'count')){
+                    if (str_contains($filter['field'],'count')) {
                         $relation = explode('_', $filter['field'])[0];
-                        $query->withCount($relation)->having($relation.'_count',$filter['value']);
+                        $query->withCount($relation)->having($relation . '_count', $filter['value']);
+                    }else if(isset($filter['relation'])){
+                        $query->whereHas($filter['relation'], function ($q) use ($filter) {
+                            $q->where($filter['field'], 'like', '%' . $filter['value'] . '%');
+                        });
                     } else {
                         $query->where($filter['field'], 'like', '%' . $filter['value'] . '%');
                     }
@@ -59,8 +65,25 @@ class FiltersHelper
                     if (str_contains($filter['field'], 'count')) {
                         $relation = explode('_', $filter['field'])[0];
                         $query->withCount($relation);
+                        $query->orderBy($filter['field'], $filter['sort']);
                     }
-                    $query->orderBy($filter['field'], $filter['sort']);
+                    else if (isset($filter['relation'])) {
+                        if ($filter['field'] === 'wallets.balance') {
+                            $query->orderBy(
+                                Wallet::select('balance')
+                                    ->whereColumn('holder_id', 'users.id')
+                                    ->where('holder_type', User::class)
+                                    ->limit(1),
+                                $filter['sort']
+                            );
+                        } else {
+                            $query->join($filter['join'][0], $filter['join'][1], $filter['join'][2]);
+                            $query->orderBy($filter['field'], $filter['sort']);
+                        }
+                    }else{
+                        $query->orderBy($filter['field'], $filter['sort']);
+                    }
+                   
                 }
             }
         }

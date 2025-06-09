@@ -12,6 +12,7 @@ class UserTransformer
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'balance' => $user->balance,
             'role' => $user->roles->isNotEmpty() ? $user->getRoleNames()[0] : '---',
             'created_at' => $user->created_at->format('d/m/Y'),
         ];
