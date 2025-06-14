@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\CardTypeController;
 use App\Http\Controllers\Admin\CollectionController;
+use App\Http\Controllers\Client\CollectionController as ClientCollectionController;
 use App\Http\Controllers\Admin\PublisherController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SocialLoginController;
@@ -101,6 +102,7 @@ Route::group([
         'prefix' => 'collections',
     ],function() {
         Route::post('getData', [CollectionController::class,'getData'])->name('collections.getData');
+        Route::get('getPage/{collection}/{page}', [CollectionController::class,'getPage'])->name('collections.getPage');
     });
 
     Route::resource('cards', CardController::class);
@@ -112,6 +114,26 @@ Route::group([
     });
 
     Route::resource('cardtypes', CardTypeController::class);
+});
+
+Route::group([
+    'middleware' => [
+        'auth',
+        'verified',
+        'role:client'
+    ],
+    'prefix' => 'client',
+    'as' => 'client.'
+], function () {
+    Route::resource('collections', ClientCollectionController::class)->only(['index', 'show']);
+    Route::group([
+        'prefix' => 'collections',
+    ], function () {
+        Route::get('/collections/subscribed', [
+            CollectionController::class,
+            'getSubscribedCollections'
+        ])->name('collections.getSubscribedCollections');
+    });
 });
 
 Route::middleware('web')->group(function () {

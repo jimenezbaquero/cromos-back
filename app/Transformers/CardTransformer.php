@@ -11,8 +11,10 @@ class CardTransformer
         return [
             'id' => $card->id,
             'number' => $card->number,
-            'card_type' => $card->cardType->name,
-            'url' => $card->url_photo,
+            'collection' => $card->collection->name,
+            'card_type' => $card->card_type->name,
+            'url' => $card->url,
+            'publisher' => $card->publisher->name ,
             'probability' => $card->probability,
             'created_at' => $card->created_at->format('d/m/Y'),
         ];

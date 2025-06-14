@@ -23,7 +23,7 @@ class PublisherService
         return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
     }
 
-    public function createPublisher(array $data)
+    public function store(array $data)
     {
         try {
             $publisher = Publisher::create([
@@ -32,7 +32,7 @@ class PublisherService
 
             return $publisher;
         } catch (\Throwable $e) {
-            Log::error('Error al crear editorial : ' . $e->getMessage(), [
+            Log::error(__('publisher_create_error') . $e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
                 'input' => $data,
             ]);
@@ -40,7 +40,7 @@ class PublisherService
         }
     }
 
-    public function updatePublisher(Publisher $publisher, array $data)
+    public function update(Publisher $publisher, array $data)
     {
         try {
             $publisher->update([
@@ -49,7 +49,7 @@ class PublisherService
 
             return $publisher;
         } catch (\Throwable $e) {
-            Log::error('Error al actualizar editorial: ' . $e->getMessage(), [
+            Log::error(__('publisher_update_error') . $e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
                 'input' => $data,
             ]);
@@ -57,13 +57,13 @@ class PublisherService
         }
     }
 
-    public function deletePublisher(Publisher $publisher): bool
+    public function destroy(Publisher $publisher): bool
     {
         try {
             $publisher->delete();
             return true;
         } catch (\Throwable $e) {
-            Log::error('Error al eliminar editorial: ' . $e->getMessage());
+            Log::error(__('publisher_delete_error') . $e->getMessage());
             return false;
         }
     }

@@ -29,23 +29,12 @@ class CardController extends Controller
     public function index(Request $request)
     {
         $cards = $this->getDataQuery($request)->paginate(10)->withQueryString();
-
-        foreach ($cards as $key => $card) {
-            $cards[$key] = [
-                'id' => $card->id,
-                'number' => $card->number,
-                'collection' => $card->collection->name,
-                'card_type' => $card->card_type->name,
-                'url' => $card->url,
-                'publisher' => $card->publisher->name ,
-                'probability' => $card->probability,
-                'created_at' => $card->created_at->format('d/m/Y'),
-            ];
-        }
-
+        
         return Inertia::render('Admin/Collections/ShowCards', [
             'cards' => $cards,
-            'filters' => $request->only('search', 'sort', 'direction'),
+            'headers' => CardHeader::getHeaders(),
+            'filters' => CardFilter::getFilters(),
+            'funnels' => CardFilter::getFunnelOptions()
         ]);
     }
 

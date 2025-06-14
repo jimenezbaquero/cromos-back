@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Client;
 
 use App\Filters\CollectionFilter;
 use App\Headers\CollectionHeader;
@@ -13,6 +13,7 @@ use App\Services\CollectionService;
 use App\Services\PublisherService;
 use App\Transformers\CardTransformer;
 use App\Transformers\collectionTransformer;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,13 +31,10 @@ class CollectionController extends Controller
     }
     public function index(Request $request)
     {
-        $collections = $this->getDataWithFilters($request);
+        $collections = $this->collectionService->getCollectionsToClient($request);
 
-        return Inertia::render('Admin/Collections/Index', [
+        return Inertia::render('Client/Collections/Index', [
             'collections' => $collections,
-            'filters' => CollectionFilter::getFilters(),
-            'headers' => CollectionHeader::getHeaders(),
-            'funnels' => CollectionFilter::getFunnelOptions(),
         ]);
     }
 
@@ -51,21 +49,39 @@ class CollectionController extends Controller
 
     public function store(CollectionRequest $request)
     {
+        $data = $request->validated();
+
+        DB::beginTransaction();
         try {
-            $this->collectionService->store($request->all());
-            return redirect()->route('admin.collection.index')->with('success', 'collection_create_success');
-        }catch (\Throwable $e) {
-            Log::error(__('collection_create_error').' - ' . $e->getMessage());
-            return back()->withErrors(['error' => __('collection_create_error')])->withInput();
+            $collection = Collection::create($data);
+            DB::commit();
+
+            return redirect()->route('admin.collections.index')->with('success', 'Colección creada correctamente');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error al crear colección: ' . $e->getMessage(), [
+                'stack' => $e->getTraceAsString(),
+                'input' => $request->all(),
+            ]);
+
+            return back()->withErrors(['error' => 'Hubo un problema al crear la colección'])->withInput();
         }
     }
 
     public function show(Collection $collection)
     {
-        $pages = $this->getFirstsPages($collection);
+        $collection->load('publisher');
+
         return Inertia::render('Admin/Collections/Show', [
-            'collection' => CollectionTransformer::transformToWebShow($collection),
-            'pages' => $pages
+            'collection' => [
+                'id' => $collection->id,
+                'name' => $collection->name,
+                'description' => $collection->description,
+                'year' => $collection->year,
+                'publisher' => $collection->publisher ? $collection->publisher->name : '---',
+                'card_number' => $collection->cards()->count(),
+                'created_at' => $collection->created_at->format('d/m/Y'),
+            ],
         ]);
     }
 
@@ -81,23 +97,34 @@ class CollectionController extends Controller
 
     public function update(CollectionRequest $request, Collection $collection)
     {
+        $data = $request->all();
+
+        DB::beginTransaction();
         try {
-            $this->collectionService->update($collection, $request->all());
-            return redirect()->route('admin.collections.index')->with('success', __('collection_update_success'));
-        }catch (\Throwable $e) {
-            Log::error(__('collection_update_error') .' - '. $e->getMessage());
-            return back()->withErrors(['error' => __('collection_update_error')]);
+            $collection->update($data);
+            DB::commit();
+
+            return redirect()->route('admin.collections.index')
+                ->with('success', 'Colección actualizada correctamente');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar colección: ' . $e->getMessage());
+
+            return back()->withErrors(['error' => 'Hubo un problema al actualizar la colección']);
         }
     }
 
     public function destroy(Collection $collection)
     {
         try {
-            $this->collectionService->destroy($collection);
-            return redirect()->route('collections.index')->with('success', __('collection_delete_success'));
-        }catch (\Throwable $e){
-            Log::error(__('collection_delete_error').' - '. $e->getMessage());
-            return back()->withErrors(['error' => __('collection_delete_error')]);
+            $collection->delete();
+
+            return redirect()->route('admin.collections.index')
+                ->with('success', 'Colección eliminada correctamente');
+        } catch (\Throwable $e) {
+            Log::error('Error al eliminar colección: ' . $e->getMessage());
+
+            return back()->withErrors(['error' => 'Hubo un problema al eliminar la colección']);
         }
     }
 
@@ -110,23 +137,5 @@ class CollectionController extends Controller
         $collections  = $this->collectionService->getDataWithFilters($request->all());
         return TransformHelper::transform(CollectionTransformer::class, $collections);
     }
-    
-    public function getFirstsPages(Collection $collection) {
-        $pages = [];
-        for($i = 1; $i <= 3; $i++ ){
-            $pages[$i] = $this->generatePage($collection, $i)['page'];
-        }
-        return $pages;
-    }
-    
-    public function generatePage(Collection $collection, int $i) {
-        return $this->collectionService->generatePage($collection, $i);
-    }
-    
-    public function getPage(Collection $collection, $page){
-        $img = $this->collectionService->generatePage($collection, $page);
-        return response()->json($img);
-    }
-    
-    
+
 }

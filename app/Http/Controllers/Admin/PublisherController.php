@@ -7,6 +7,7 @@ use App\Headers\PublisherHeader;
 use App\Helper\TransformHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PublisherRequest;
+use App\Models\Collection;
 use App\Models\Publisher;
 use App\Services\PublisherService;
 use App\Transformers\CardTransformer;
@@ -28,15 +29,12 @@ class PublisherController extends Controller
 
     public function index(Request $request)
     {
-        $filters = PublisherFilter::getFilters();
-        $headers = PublisherHeader::getHeaders();
-
         $publishers = $this->getDataWithFilters($request);
 
         return Inertia::render('Admin/Publishers/Index', [
             'publishers' => $publishers,
-            'filters' => $filters,
-            'headers' => $headers,
+            'filters' => PublisherFilter::getFilters(),
+            'headers' => PublisherHeader::getHeaders(),
         ]);
     }
 
@@ -47,20 +45,11 @@ class PublisherController extends Controller
 
     public function store(PublisherRequest $request)
     {
-        $data = $request->validated();
-
-        DB::beginTransaction();
         try {
-            Publisher::create($data);
-            DB::commit();
-            return redirect()->route('admin.publishers.index')->with('success', 'Editorial creada correctamente');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Error al crear editorial: ' . $e->getMessage(), [
-                'stack' => $e->getTraceAsString(),
-                'input' => $request->all(),
-            ]);
-            return back()->withErrors(['error' => 'Hubo un problema al crear la editorial'])->withInput();
+            $this->publisherService->store($request->all());
+            return redirect()->route('admin.publishers.index')->with('success', 'publisher_create_success');
+        }catch (\Throwable $e) {
+            return back()->withErrors(['error' => __('publisher_create_error')])->withInput();
         }
     }
 
@@ -73,17 +62,21 @@ class PublisherController extends Controller
 
     public function update(PublisherRequest $request, Publisher $publisher)
     {
-        $data = $request->validated();
-
-        DB::beginTransaction();
         try {
-            $publisher->update($data);
-            DB::commit();
-            return redirect()->route('admin.publishers.index')->with('success', 'Editorial actualizada correctamente');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Error al actualizar editorial: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Hubo un problema al actualizar la editorial']);
+            $this->publisherService->update($publisher, $request->all());
+            return redirect()->route('admin.publishers.index')->with('success', __('publisher_update_success'));
+        }catch (\Throwable $e) {
+            return back()->withErrors(['error' => __('publisher_update_error')]);
+        }
+    }
+    
+    public function destroy(Publisher $publisher)
+    {
+        try {
+            $this->publisherService->destroy($publisher);
+            return redirect()->route('publishers.index')->with('success', __('publisher_delete_success'));
+        }catch (\Throwable $e){
+            return back()->withErrors(['error' => __('publisher_delete_error')]);
         }
     }
 

@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('collections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->unsignedSmallInteger('total_card')->default(400);
             $table->string('description')->nullable();
+            $table->string('url_cover_photo')->nullable();
+            $table->string('url_backcover_photo')->nullable();
             $table->unsignedSmallInteger('year');
             $table->foreignId('publisher_id')->constrained('publishers');
             $table->timestamps();

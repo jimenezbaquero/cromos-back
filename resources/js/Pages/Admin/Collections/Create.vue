@@ -50,6 +50,7 @@ const form = useForm({
   name: '',
   description: '',
   year: '',
+  photo: null,
   publisher_id:''
 });
 

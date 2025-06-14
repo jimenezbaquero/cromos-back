@@ -22,20 +22,20 @@
       <p><strong>{{ $t('cards_number') }}:</strong> {{ collection.card_number }}</p>
     </div>
     
+
     <div>
       <h1>Álbum</h1>
-      <AlbumSlider :pages="pages" :collection="collection" />
+      <AlbumSlider :pages="pages" :colection="collection" />
     </div>
-    
   </AdminLayout>
 </template>
 
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import {computed} from "vue";
 import {useI18n} from "vue-i18n";
 import {Link} from "@inertiajs/vue3";
 import AlbumSlider from "@/Components/AlbumSlider.vue";
+import Head from "@inertiajs/inertia-vue3/src/head.js";
 
 const { t } = useI18n()
 
@@ -44,12 +44,6 @@ const props = defineProps({
   pages: Object
 });
 
-const columns = computed(() => [
-  { key: 'id', label: 'ID', sortable: true },
-  { key: 'number', label: t('number'), sortable: true },
-  { key: 'type_card_id', label: t('type'), sortable: true },
-  { key: 'url_photo', label: t('url'), sortable: false },
-  { key: 'created_at', label: t('created_at'), sortable: true }
-])
+
 
 </script>

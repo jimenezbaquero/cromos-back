@@ -1,11 +1,12 @@
 <template>
   <Head title="Welcome" />
-  <h1 class="text-4xl font-bold text-center">{{$t('dashboard de cliente')}}</h1>
+  <ClientLayout>
+    <h1 class="text-4xl font-bold text-center">{{$t('dashboard de cliente')}}</h1>
+  </ClientLayout>
 </template>
 
 <script setup>
-import AdminLayout from "@/Layouts/AdminLayout.vue";
-defineOptions({
-  layout: AdminLayout,
-})
+
+import ClientLayout from "@/Layouts/ClientLayout.vue";
+
 </script>

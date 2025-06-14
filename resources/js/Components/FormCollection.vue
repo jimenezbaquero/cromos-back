@@ -39,6 +39,18 @@
     </div>
     
     <div class="mb-4">
+      <label for="url_photo" class="block font-medium text-gray-700 mb-1">{{$t('photo')}}</label>
+      <input
+        id="photo"
+        type="file"
+        class="w-full border border-gray-300 rounded px-3 py-2"
+        :class="{'border-red-500': form.errors.photo}"
+        @change="onFileChange"
+      />
+      <p v-if="form.errors.photo" class="text-red-600 text-sm mt-1">{{ form.errors.photo }}</p>
+    </div>
+    
+    <div class="mb-4">
       <label for="publisher_id" class="block font-medium text-gray-700 mb-1">{{$t('publisher')}}</label>
       <select
         id="publisher_id"
@@ -71,5 +83,12 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const onFileChange = (event) => {
+  const files = event.target.files;
+  if (files.length > 0) {
+    props.form.photo = files[0];
+  }
+}
 
 </script>

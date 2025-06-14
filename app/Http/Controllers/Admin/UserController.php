@@ -30,14 +30,12 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $filters = UserFilter::getFilters();
-        $headers = UserHeader::getHeaders();
         $users = $this->getDataWithFilters($request);
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
-            'filters' => $filters,
-            'headers' => $headers,
+            'filters' => UserFilter::getFilters(),
+            'headers' => UserHeader::getHeaders(),
             'funnels' => UserFilter::getFunnelOptions(),
         ]);
     }
@@ -53,13 +51,10 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
-        $data = $request->all();
-        DB::beginTransaction();
         try {
-            $this->userService->createUser($request->all());
+            $this->userService->store($request->all());
             return redirect()->route('admin.users.index')->with('success', 'user_create_success');
         }catch (\Throwable $e) {
-            Log::error(__('user_create_error').' - ' . $e->getMessage());
             return back()->withErrors(['error' => __('user_create_error')])->withInput();
         }
     }
@@ -88,10 +83,9 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user)
     {
         try {
-            $this->userService->updateUser($user, $request->all());
+            $this->userService->update($user, $request->all());
             return redirect()->route('admin.users.index')->with('success', __('user_update_success'));
         }catch (\Throwable $e) {
-            Log::error(__('user_update_error') .' - '. $e->getMessage());
             return back()->withErrors(['error' => __('user_update_error')]);
         }
     }
@@ -99,10 +93,9 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         try {
-            $this->userService->deleteUser($user);
+            $this->userService->destroy($user);
             return redirect()->route('users.index')->with('success', __('user_delete_success'));
         }catch (\Throwable $e){
-            Log::error(__('user_delete_error').' - '. $e->getMessage());
             return back()->withErrors(['error' => __('user_delete_error')]);
         }
     }

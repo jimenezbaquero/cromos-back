@@ -23,7 +23,7 @@ class UserService
         return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
     }
 
-    public function createUser(array $data)
+    public function store(array $data)
     {
         DB::beginTransaction();
         try {
@@ -46,7 +46,7 @@ class UserService
             return $user;
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error al crear usuario: ' . $e->getMessage(), [
+            Log::error(__('user_create_error') . $e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
                 'input' => $data,
             ]);
@@ -54,7 +54,7 @@ class UserService
         }
     }
 
-    public function updateUser(User $user, array $data)
+    public function update(User $user, array $data)
     {
         DB::beginTransaction();
         try {
@@ -70,7 +70,7 @@ class UserService
             return $user;
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error al actualizar usuario: ' . $e->getMessage(), [
+            Log::error(__('user_update_error') . $e->getMessage(), [
                 'stack' => $e->getTraceAsString(),
                 'input' => $data,
             ]);
@@ -78,13 +78,13 @@ class UserService
         }
     }
 
-    public function deleteUser(User $user): bool
+    public function destroy(User $user): bool
     {
         try {
             $user->delete();
             return true;
         } catch (\Throwable $e) {
-            Log::error('Error al eliminar usuario: ' . $e->getMessage());
+            Log::error(__('user_delete_error') . $e->getMessage());
             return false;
         }
     }
