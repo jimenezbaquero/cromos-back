@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Browsershot\Browsershot;
 
 class CollectionService
 {
@@ -93,34 +95,34 @@ class CollectionService
             ];
         }
         $actualcard = $initialCard;
-        $images = [];
         for ($row = 0; $row < 3; $row++) {
             for ($col = 0; $col < 3; $col++) {
-                $card = $collection->cards->where('cards.number', $actualcard)->first();
+                $image = ['number' => $actualcard];
+                $card = $collection->cards->where('number', $actualcard)->first();
                 if ($card) {
-                    // Obtener el contenido de la imagen
-                    $imagePath = public_path('storage/' . $card->url_photo);
-                    if (file_exists($imagePath)) {
-                        $imageData = base64_encode(file_get_contents($imagePath));
-                        $imageType = mime_content_type($imagePath);
-                        $images[$row][$col] = 'data:' . $imageType . ';base64,' . $imageData;
+                    if(!is_null($card->url_photo)){
+                        $url =public_path($card->url_photo);
+                        $image['url'] = $url;
                     } else {
-                        $images[$row][$col] = null;
+                        $url = 'no tiene url';
                     }
                 } else {
-                    $images[$row][$col] = null;
+                    $url = 'no existe el cromo';
                 }
+                $image['url'] = $url;
+                $images[$row][$col] = $image;
                 $actualcard++;
             }
         }
         $html = view('album', compact('images'))->render();
-
-        $binary = SnappyImage::getOutputFromHtml($html, [
-            'width'  => 800,
-            'height' => 600,
-        ]);
+        
+        $image = Browsershot::html($html)
+            ->windowSize(400, 800)
+            ->waitUntilNetworkIdle()
+            ->screenshot();
+        
         return [
             'exists' => true,
-            'page' => 'data:image/jpeg;base64,' . base64_encode($binary)];
+            'page' => 'data:image/png;base64,' . base64_encode($image)];
     }
 }

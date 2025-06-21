@@ -13,7 +13,6 @@
             padding: 8px;
             text-align: center;
             vertical-align: middle;
-            border: 1px solid #ccc;
         }
         img {
             max-width: 100%;
@@ -22,13 +21,12 @@
     </style>
 </head>
 <body>
-
-<table class="w-full">
+<table class="w-80 m-auto">
     @for ($row = 0; $row < 3; $row++)
         <tr>
             @for ($col = 0; $col < 3; $col++)
                 <td>
-                    <img src="{{ $images[$row][$col] }}" alt="Imagen {{ $row*3 + $col + 1 }}">
+                    <img src="{{ $images[$row][$col]['url'] }}" alt="Imagen {{ $images[$row][$col]['number'] }}">
                 </td>
             @endfor
         </tr>

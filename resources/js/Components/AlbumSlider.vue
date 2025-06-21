@@ -15,7 +15,7 @@
     <!-- Páginas de cromos -->
     <swiper-slide v-for="(page, index) in pages" :key="index">
 <!--      <PageGrid :page-data="page" />-->
-      <img class="w-full" :src="page" loading="lazy"/>
+      <img class="margin-auto" :src="page" loading="lazy"/>
     </swiper-slide>
     
     <!-- Contraportada -->
