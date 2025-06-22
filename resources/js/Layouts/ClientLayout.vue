@@ -94,9 +94,6 @@
               <DropdownLink :href="route('profile.edit')">
                 Añadir crédito
               </DropdownLink>
-              <DropdownLink :href="route('logout')" method="post" as="button">
-                Comprar sobres
-              </DropdownLink>
             </template>
           </Dropdown>
         </div>

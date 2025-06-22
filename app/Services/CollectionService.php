@@ -82,8 +82,14 @@ class CollectionService
     }
     
     public function getCollectionsToClient(Request $request) {
-        $user = Auth::user();
-        return $user->collections;
+        $query = Auth::user()->collections();
+        
+        if (!empty($filters)) {
+            $query = FiltersHelper::applyTableFilter($query, $filters);
+        }
+        $page = $filters['page']['page'] ?? $filters['page'] ?? 1;
+        $perPage = $filters['page']['perPage'] ?? $filters['perPage'] ?? 10;
+        return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
     }
     
     public function generatePage(Collection $collection, int $page) {

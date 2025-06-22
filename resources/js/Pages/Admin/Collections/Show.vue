@@ -22,7 +22,7 @@
       <p><strong>{{ $t('cards_number') }}:</strong> {{ collection.card_number }}</p>
     </div>
     
-    <div>
+    <div class="w-80 m-auto">
       <h1>Álbum</h1>
       <AlbumSlider :pages="pages" :collection="collection" />
     </div>

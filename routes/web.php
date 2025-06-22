@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Client\CollectionController as ClientCollectionController;
 use App\Http\Controllers\Admin\PublisherController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Client\UserController as ClientUserController;
 use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -125,15 +126,18 @@ Route::group([
     'prefix' => 'client',
     'as' => 'client.'
 ], function () {
+    
     Route::resource('collections', ClientCollectionController::class)->only(['index', 'show']);
     Route::group([
         'prefix' => 'collections',
     ], function () {
-        Route::get('/collections/subscribed', [
+        Route::get('subscribed', [
             CollectionController::class,
             'getSubscribedCollections'
         ])->name('collections.getSubscribedCollections');
+        Route::post('buy/{collection}/{product}',[ClientUserController::class,'buy'])->name('collections.buy');
     });
+    
 });
 
 Route::middleware('web')->group(function () {

@@ -10,6 +10,7 @@ use App\Http\Requests\CollectionRequest;
 use App\Models\Collection;
 use App\Models\Publisher;
 use App\Services\CollectionService;
+use App\Services\ProductService;
 use App\Services\PublisherService;
 use App\Transformers\CardTransformer;
 use App\Transformers\collectionTransformer;
@@ -23,49 +24,27 @@ class CollectionController extends Controller
 {
     protected $collectionService;
     protected $publisherService;
+    protected $productService;
 
-    public function __construct(CollectionService $collectionService, PublisherService $publisherService )
+    public function __construct(CollectionService $collectionService, PublisherService $publisherService, ProductService $productService )
     {
         $this->collectionService = $collectionService;
         $this->publisherService = $publisherService;
+        $this->productService = $productService;
     }
     public function index(Request $request)
     {
+        $products = $this->productService->getProducts();
         $collections = $this->collectionService->getCollectionsToClient($request);
+        $collections = TransformHelper::transform(CollectionTransformer::class, $collections);
 
         return Inertia::render('Client/Collections/Index', [
             'collections' => $collections,
+            'filters' => CollectionFilter::getFilters(),
+            'headers' => CollectionHeader::getHeaders(),
+            'funnels' => CollectionFilter::getFunnelOptions(),
+            'products' => $products
         ]);
-    }
-
-    public function create()
-    {
-        $publishers = Publisher::all(['id', 'name']);
-
-        return Inertia::render('Admin/Collections/Create', [
-            'publishers' => $publishers,
-        ]);
-    }
-
-    public function store(CollectionRequest $request)
-    {
-        $data = $request->validated();
-
-        DB::beginTransaction();
-        try {
-            $collection = Collection::create($data);
-            DB::commit();
-
-            return redirect()->route('admin.collections.index')->with('success', 'Colección creada correctamente');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Error al crear colección: ' . $e->getMessage(), [
-                'stack' => $e->getTraceAsString(),
-                'input' => $request->all(),
-            ]);
-
-            return back()->withErrors(['error' => 'Hubo un problema al crear la colección'])->withInput();
-        }
     }
 
     public function show(Collection $collection)
@@ -83,49 +62,6 @@ class CollectionController extends Controller
                 'created_at' => $collection->created_at->format('d/m/Y'),
             ],
         ]);
-    }
-
-    public function edit(Collection $collection)
-    {
-        $publishers = Publisher::all(['id', 'name']);
-
-        return Inertia::render('Admin/Collections/Edit', [
-            'collection' => $collection,
-            'publishers' => $publishers,
-        ]);
-    }
-
-    public function update(CollectionRequest $request, Collection $collection)
-    {
-        $data = $request->all();
-
-        DB::beginTransaction();
-        try {
-            $collection->update($data);
-            DB::commit();
-
-            return redirect()->route('admin.collections.index')
-                ->with('success', 'Colección actualizada correctamente');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Error al actualizar colección: ' . $e->getMessage());
-
-            return back()->withErrors(['error' => 'Hubo un problema al actualizar la colección']);
-        }
-    }
-
-    public function destroy(Collection $collection)
-    {
-        try {
-            $collection->delete();
-
-            return redirect()->route('admin.collections.index')
-                ->with('success', 'Colección eliminada correctamente');
-        } catch (\Throwable $e) {
-            Log::error('Error al eliminar colección: ' . $e->getMessage());
-
-            return back()->withErrors(['error' => 'Hubo un problema al eliminar la colección']);
-        }
     }
 
     public function getData(Request $request){

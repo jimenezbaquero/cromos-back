@@ -18,8 +18,11 @@ class DatabaseSeeder extends Seeder
             CardTypeSeeder::class,
             PublisherSeeder::class,
             CollectionSeeder::class,
+            ProductSeeder::class,
             CardSeeder::class,
             UserSeeder::class,
+            PackageSeeder::class,
+            StickerSeeder::class
         ]);
     }
 }

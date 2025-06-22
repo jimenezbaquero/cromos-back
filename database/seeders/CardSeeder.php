@@ -15,35 +15,25 @@ class CardSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void {
-        $combinations = [];
-        $data = [];
-        for ($i = 1; $i <= 5000; $i++) {
-            $collection = Collection::inRandomOrder()->first();
-            $cardType = CardType::inRandomOrder()->first();
-            $combination = $this->chooseCombination($combinations, $collection);
-            $urlPhoto = $cardType->name == 'Horizontal' ? Storage::url('card_photos/cromo_horizontal.png') : Storage::url('card_photos/cromo_vertical.png');
-            $data[] =[
-                'number' => $combination[0],
-                'collection_id' => $collection->id,
-                'card_type_id' => $cardType->id,
-                'url_photo' => $urlPhoto,
-                'probability' => $this->chooseProbability(),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ];
-            $combinations[] = $combination;
+        foreach (Collection::all() as $collection) {
+            for ($number = 1; $number <= $collection->total_cards; $number++) {
+                $cardType = CardType::inRandomOrder()->first();
+                $urlPhoto = $cardType->name == 'Horizontal' ? Storage::url('card_photos/cromo_horizontal.png') : Storage::url('card_photos/cromo_vertical.png');
+                
+                $data[] =[
+                    'number' => $number,
+                    'collection_id' => $collection->id,
+                    'card_type_id' => $cardType->id,
+                    'url_photo' => $urlPhoto,
+                    'probability' => $this->chooseProbability(),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
+            }
         }
-        Card::insert($data);
-    }
-    
-    public function chooseCombination(array $combinations, Collection $collection) {
-        do {
-            $combination = [
-                random_int(0, 400),
-                $collection->id
-            ];
-        } while (in_array($combination, $combinations));
-        return $combination;
+        foreach (array_chunk($data, 1000) as $chunk) {
+            Card::insert($chunk);
+        }
     }
     
     public function chooseProbability() {

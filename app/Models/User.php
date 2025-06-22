@@ -58,4 +58,12 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordC
     public function collections(): BelongsToMany {
         return $this->belongsToMany(Collection::class);
     }
+    
+    public function packages(): HasMany {
+        return $this->hasMany(Package::class);
+    }
+    
+    public function stickers(): HasMany {
+        return $this->hasMany(Sticker::class);
+    }
 }

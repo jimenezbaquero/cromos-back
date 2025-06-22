@@ -39,33 +39,56 @@
       @cancelAction="cancelDelete"
       @confirmAction="performDelete"
     />
+    
+    <!-- Modal de compra -->
+    <BuyModal
+      :show="showBuyModal"
+      :products="products"
+      :title="$t('buy_package')"
+      @cancelBuy="cancelBuy"
+      @confirmBuy="handleBuy"
+    />
+    
+    <PackageModal
+      :show="showPackageModal"
+      :image="packageImage"
+      :title="$t('open_package')"
+      @close="closePackageModal"
+    />
+    
   </ClientLayout>
 </template>
 
 <script setup>
-import AdminLayout from '@/Layouts/AdminLayout.vue'
 import Datatable from '@/Components/Datatable.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Head, Link, router } from '@inertiajs/vue3'
+import {Head, router} from '@inertiajs/vue3'
 import { useFlashFromResponse } from '@/Composables/useFlashFromResponse'
-import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/solid'
+import {PencilSquareIcon, TrashIcon, EyeIcon, WalletIcon} from '@heroicons/vue/24/solid'
+import ClientLayout from "@/Layouts/ClientLayout.vue";
+import BuyModal from "@/Components/BuyModal.vue";
+import PackageModal from "@/Components/PackageModal.vue";
 
 const props = defineProps({
   collections: Object,
   headers: Object,
   filters: Object,
-  funnels: Object
+  funnels: Object,
+  products: Object
 })
 
 const { t } = useI18n()
 const { showFlash } = useFlashFromResponse()
 
 const showConfirmModal = ref(false)
+const showBuyModal = ref(false)
+const showPackageModal = ref(false)
 const isLoading = ref(false)
 const selectedCollection = ref(null)
 const filteredData = ref(props.collections)
+const packageImage = ref(null)
 
 const rowActions = [
   {
@@ -81,12 +104,25 @@ const rowActions = [
     class: 'text-yellow-600 hover:text-yellow-800'
   },
   {
+    label: 'buy',
+    icon: WalletIcon,
+    onClick: (item) => openBuyModal(item.id),
+    class: 'text-green-600 hover:text-green-800'
+  },
+  {
     label: 'delete',
     icon: TrashIcon,
     onClick: (item) => confirmDelete(item),
     class: 'text-red-600 hover:text-red-800'
   }
 ]
+
+
+const openBuyModal = (id) => {
+  console.log('abriendo modal de compra')
+  selectedCollection.value = id
+  showBuyModal.value = true
+}
 
 function confirmDelete(collection) {
   selectedCollection.value = collection
@@ -116,6 +152,32 @@ function cancelDelete() {
   selectedCollection.value = null
 }
 
+function cancelBuy() {
+  showBuyModal.value = false
+  selectedCollection.value = null
+}
+
+function handleBuy(product) {
+  isLoading.value = true
+  packageImage.value = null
+  axios.post(route('client.collections.buy', {'collection':selectedCollection.value,'product':product}), {
+    preserveScroll: true})
+    .then(response => {
+      isLoading.value = false
+      showFlash()
+      showBuyModal.value = false
+      showPackage(response.data.image)
+      })
+    .catch(() => {
+      showFlash()
+    })
+}
+
+const showPackage = (image) => {
+  packageImage.value = image
+  showPackageModal.value = true
+}
+
 function goShow(id){
   router.visit(route('admin.collections.show', id))
 }
@@ -128,4 +190,12 @@ const changeFilters = (filters) => {
         isLoading.value = false
       })
 }
+
+const closePackageModal = () => {
+  console.log('cerrando modal en index')
+  showPackageModal.value = false
+  packageImage.value = null
+  
+}
+
 </script>

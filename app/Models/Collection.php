@@ -24,6 +24,7 @@ class Collection extends Model
     protected $fillable = [
         'name',
         'description',
+        'total_cards',
         'year',
         'publisher_id'
     ];

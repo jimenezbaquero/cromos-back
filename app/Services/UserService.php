@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Helper\FiltersHelper;
+use App\Models\Collection;
+use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +14,11 @@ use Illuminate\Auth\Events\Registered;
 
 class UserService
 {
+    protected $packageService;
+    public function __construct(PackageService $packageService) {
+        $this->packageService = $packageService;
+    }
+    
     public function getDataWithFilters($filters)
     {
         $query = User::with(['roles','wallet']);
@@ -87,5 +95,21 @@ class UserService
             Log::error(__('user_delete_error') . $e->getMessage());
             return false;
         }
+    }
+    
+    public function buy(User $user, Collection $collection, Product $product) {
+        
+        return DB::transaction(function () use ($user, $collection, $product) {
+            $user->pay($product);
+            
+            $package = $this->packageService->generatePackage($user, $collection, $product);
+            $imagePackage = $this->packageService->generateImage($package);
+            
+            return [
+                'status'     => 'success',
+                'message'    => 'Compra con éxito',
+                'image' => $imagePackage,
+            ];
+        });
     }
 }
