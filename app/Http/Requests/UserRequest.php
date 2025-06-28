@@ -27,6 +27,14 @@ class UserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
             'role' => ['required', Rule::exists('roles', 'name')],
+            'publisher_id' => ['required_if:role,editor', 'exists:publishers,id'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'publisher_id.required_if' => __('validation.publisher_required_if'),
         ];
     }
 }

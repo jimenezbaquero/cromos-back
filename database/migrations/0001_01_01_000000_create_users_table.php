@@ -20,6 +20,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->string('provider')->nullable();     // Google, Facebook, etc.
             $table->string('provider_id')->nullable();  // ID del usuario en el proveedor
+            $table->foreignId('publisher_id')->nullable()->constrained('publishers')->nullOnDelete();
             $table->timestamps();
         });
 

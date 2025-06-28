@@ -8,6 +8,7 @@ use App\Helper\TransformHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Services\PublisherService;
 use App\Services\RoleService;
 use App\Services\UserService;
 use App\Transformers\CardTransformer;
@@ -21,11 +22,13 @@ class UserController extends Controller
 {
     protected $userService;
     protected $roleService;
+    protected $publisherService;
 
-    public function __construct(UserService $userService, RoleService $roleService)
+    public function __construct(UserService $userService, RoleService $roleService, PublisherService $publisherService)
     {
         $this->userService = $userService;
         $this->roleService = $roleService;
+        $this->publisherService = $publisherService;
     }
 
     public function index(Request $request)
@@ -43,9 +46,11 @@ class UserController extends Controller
     public function create()
     {
         $roles = $this->roleService->getRoles();
+        $publishers = $this->publisherService->getPublishers();
 
         return Inertia::render('Admin/Users/Create', [
             'roles' => $roles,
+            'publishers' => $publishers
         ]);
     }
 
@@ -71,12 +76,14 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = $this->roleService->getRoles();
+        $publishers = $this->publisherService->getPublishers();
 
         $user['role'] = $user->roles()->first()->name;
 
         return Inertia::render('Admin/Users/Edit', [
             'user' => $user,
             'roles' => $roles,
+            'publishers' => $publishers
         ]);
     }
 

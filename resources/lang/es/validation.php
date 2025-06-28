@@ -2,5 +2,6 @@
 
 return [
     'email' => 'El campo debe ser un email',
-    'required' => 'El campo es requerido.',
+    'publisher_required_if' => 'El campo es requerido si el rol es editor',
+    'required' => 'El campo es requerido.'
     ];

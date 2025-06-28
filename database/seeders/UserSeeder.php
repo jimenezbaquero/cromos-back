@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Collection;
+use App\Models\Publisher;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -21,9 +22,16 @@ class UserSeeder extends Seeder
 
         $admin->assignRole('admin');
 
+        // Crear 3 usuarios editor
+        $clients = User::factory(3)->create();
+        $clients->each(function ($client) {
+            $client->assignRole('editor');
+            $client->update(['publisher_id'=>Publisher::inRandomOrder()->first()->id]);
+        });
+
         // Crear 10 usuarios cliente
         $clients = User::factory(10)->create();
-        
+
         $clients->each(function ($client) {
             $client->deposit(rand(1000,10000));
             $client->assignRole('client');
@@ -31,6 +39,6 @@ class UserSeeder extends Seeder
             $randomIds = collect($collectionIds)->shuffle()->take(rand(1, count($collectionIds)))->toArray();
             $client->collections()->sync($randomIds);
         });
-        
+
     }
 }

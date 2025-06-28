@@ -11,6 +11,10 @@ use Illuminate\Auth\Events\Registered;
 
 class PublisherService
 {
+    public function getPublishers(){
+        return Publisher::select('id','name')->get();
+    }
+
     public function getDataWithFilters($filters)
     {
         $query = Publisher::with('collections');

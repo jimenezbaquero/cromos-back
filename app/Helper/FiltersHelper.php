@@ -49,7 +49,7 @@ class FiltersHelper
                             }
                         });
                     } else {
-                        $relation = explode('_', $filter['field'])[0];
+                        $relation = explode('_', $filter['field'])[1];
                         $query->whereHas($relation, function ($q) use ($filter, $cont) {
                             foreach ($filter['funnel'] as $option) {
                                 if (isset($option['value']) && $option['value']) {
@@ -83,7 +83,7 @@ class FiltersHelper
                     }else{
                         $query->orderBy($filter['field'], $filter['sort']);
                     }
-                   
+
                 }
             }
         }

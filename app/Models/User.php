@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -30,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordC
         'name',
         'email',
         'password',
+        'publisher_id'
     ];
 
     /**
@@ -54,16 +56,20 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordC
             'password' => 'hashed',
         ];
     }
-    
+
     public function collections(): BelongsToMany {
         return $this->belongsToMany(Collection::class);
     }
-    
+
     public function packages(): HasMany {
         return $this->hasMany(Package::class);
     }
-    
+
     public function stickers(): HasMany {
         return $this->hasMany(Sticker::class);
+    }
+
+    public function publisher(): BelongsTo {
+        return $this->belongsTo(Publisher::class);
     }
 }

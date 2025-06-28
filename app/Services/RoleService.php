@@ -14,6 +14,6 @@ class RoleService
 {
     public function getRoles()
     {
-        return Role::where('name', '!=', 'guest')->get();
+        return Role::where('name', '!=', 'guest')->select('id','name')->get();
     }
 }
