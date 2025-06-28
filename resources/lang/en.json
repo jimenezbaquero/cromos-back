@@ -1,8 +1,12 @@
 {
   "actions": "Actions",
+  "add_credit": "Add credits",
   "all_rights": "All rights registers",
   "already_registered": "Already registered?",
   "auth_failed": "The credentials aren incorrect",
+  "balance": "Points",
+  "buy": "Buy",
+  "buy_package": "Buy package",
   "cancel": "Cancel",
   "cant_undone": "This action cannot be undone",
   "card": "Card",
@@ -42,6 +46,7 @@
   "no_data_text1": "No results found",
   "no_data_text2": "Try adjusting the filters or reloading the page.",
   "number": "Number",
+  "open_package": "Open package",
   "password": "Password",
   "preview": "Preview",
   "profile": "Profile",
@@ -69,6 +74,7 @@
   "verify_text_1": "Click the button below to verify your email address.",
   "verify_text_2": "If you did not create an account, no further action is required.",
   "verify_text_3": "If you're having trouble clicking the button to verify your email, copy and paste this URL into your browser:",
+  "view_transactions": "View transactions",
   "welcome_text": "Welcome to Tus Cromos",
   "year": "Year"
 }

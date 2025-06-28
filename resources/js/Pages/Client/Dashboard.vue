@@ -7,6 +7,7 @@
 
 <script setup>
 
+import { Head } from "@inertiajs/vue3"
 import ClientLayout from "@/Layouts/ClientLayout.vue";
 
 </script>

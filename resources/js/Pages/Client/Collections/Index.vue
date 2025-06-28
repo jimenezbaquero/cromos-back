@@ -92,15 +92,9 @@ const packageImage = ref(null)
 
 const rowActions = [
   {
-    label: 'edit',
-    icon: PencilSquareIcon,
-    onClick: (item) => router.visit(route('admin.collections.edit', item.id)),
-    class: 'text-blue-600 hover:text-blue-800'
-  },
-  {
     label: 'show',
     icon: EyeIcon,
-    onClick: (item) => router.visit(route('admin.collections.show', item.id)),
+    onClick: (item) => router.visit(route('client.collections.show', item.id)),
     class: 'text-yellow-600 hover:text-yellow-800'
   },
   {
@@ -109,12 +103,6 @@ const rowActions = [
     onClick: (item) => openBuyModal(item.id),
     class: 'text-green-600 hover:text-green-800'
   },
-  {
-    label: 'delete',
-    icon: TrashIcon,
-    onClick: (item) => confirmDelete(item),
-    class: 'text-red-600 hover:text-red-800'
-  }
 ]
 
 
@@ -157,25 +145,30 @@ function cancelBuy() {
   selectedCollection.value = null
 }
 
-function handleBuy(product) {
+async function handleBuy(product) {
   isLoading.value = true
   packageImage.value = null
-  axios.post(route('client.collections.buy', {'collection':selectedCollection.value,'product':product}), {
+  await axios.post(route('client.collections.buy', {'collection':selectedCollection.value,'product':product}), {
     preserveScroll: true})
-    .then(response => {
-      isLoading.value = false
-      showFlash()
-      showBuyModal.value = false
-      showPackage(response.data.image)
-      })
-    .catch(() => {
-      showFlash()
+  .then(response => {
+    router.reload({only:['auth.user']})
+    packageImage.value = response.data.image
+    isLoading.value = false
+    showFlash()
+    showBuyModal.value = false
+    showPackageModal.value = true
     })
+  .catch(() => {
+    showFlash()
+  })
+  .finally(() => {
+    isLoading.value = false
+  })
 }
 
 const showPackage = (image) => {
   packageImage.value = image
-  showPackageModal.value = true
+ 
 }
 
 function goShow(id){
